@@ -13,7 +13,6 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { Link } from '@material-ui/core';
-import { Redirect } from 'react-router';
 
 const styles = theme => ({
   main: {
@@ -47,14 +46,8 @@ const styles = theme => ({
   },
 });
 
-
-
 function SignIn(props) {
-
-  
-
   const { classes } = props;
-  
 
   return (
     <main className={classes.main}>
@@ -64,17 +57,42 @@ function SignIn(props) {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Sign Up
         </Typography>
         <form className={classes.form}>
           <FormControl margin="normal"  fullWidth>
             <InputLabel htmlFor="email">Email Address</InputLabel>
-            <Input id="email" name="email" autoComplete="email" autoFocus required/>
+            <Input id="email" name="email" autoComplete="email" autoFocus />
+          </FormControl>
+          <FormControl margin="normal"  fullWidth>
+            <InputLabel htmlFor="username">UserName</InputLabel>
+            <Input id="userName" name="username" autoComplete="username" autoFocus />
+          </FormControl>
+          <FormControl margin="normal"  fullWidth>
+            <InputLabel htmlFor="fname">First Name</InputLabel>
+            <Input id="fname" name="fname" autoComplete="fname" autoFocus />
+          </FormControl>
+          <FormControl margin="normal"  fullWidth>
+            <InputLabel htmlFor="lname">Last Name</InputLabel>
+            <Input id="lname" name="lname" autoComplete="lname" autoFocus />
           </FormControl>
           <FormControl margin="normal"  fullWidth>
             <InputLabel htmlFor="password">Password</InputLabel>
-            <Input name="password" type="password" id="password" autoComplete="current-password" required />
+            <Input name="password" type="password" id="password" autoComplete="current-password" />
           </FormControl>
+
+          <Link to="/">
+          <Button
+            href="./"
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Back 
+          </Button>
+          </Link>
           <Button
             type="submit"
             fullWidth
@@ -82,32 +100,17 @@ function SignIn(props) {
             color="primary"
             className={classes.submit}
           >
-            Sign in
+            <b> Register Me Now !  </b>
           </Button>
-          
-        
+
         </form>
-
-        <Button
-            href="./Register"
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            onPress={() => this.props.navigation.push('./Register.js')}
-            className={classes.submit}
-          >
-            Sign up
-          </Button>
-         
       </Paper>
-
     </main>
   );
-  
 }
 
-
-
+SignIn.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
 
 export default withStyles(styles)(SignIn);
