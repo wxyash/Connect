@@ -1,7 +1,7 @@
 import { URL } from './api'
 import io from 'socket.io-client';
 
-let socket_instance = ''
+let socket_instance
 
 export const socket = {
   methods: {
@@ -16,4 +16,4 @@ export const socket = {
     }
   }
 }
-export default socket_instance
+export default socket

@@ -84,7 +84,11 @@ io.use(async (socket, next) => {
   }
   console.log(socket.handshake.query)
   socket.emit('welcome', user)
-  return next()
+  next()
+
+  socket.on('typing', (data) => {
+    io.sockets.emit('typing', data)
+  })
 
 })
 /**

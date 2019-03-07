@@ -8,6 +8,9 @@ export const API = {
     },
     register: function (data) {
       return axios.post(URL + '/user/register', data)
+    },
+    findByEmail: function (email) {
+      return axios.post(URL + `/user/find`, email)
     }
   }
 }
