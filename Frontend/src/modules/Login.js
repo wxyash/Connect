@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { Link } from 'react-router-dom'
 import { socket } from '../controllers/socketio'
+import STATE from '../global/state'
 
 const styles = theme => ({
   main: {
@@ -71,10 +72,10 @@ class SignIn extends React.Component {
     io.on('disconnect', (error) => {
       console.log('Invalid Password')
     })
-    io.on('connect', () => {
-      this.props.history.push('/Home')
-      console.log('Connected')
-      return
+    io.on('connect', () => {})
+    io.on('welcome', async (data) => {
+      await STATE.setters.setUser(data)
+      this.props.history.push("/Home")
     })
   }
 

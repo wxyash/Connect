@@ -17,6 +17,8 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import DirectionsIcon from '@material-ui/icons/Directions';
+import STATE from '../global/state'
+import io from '../controllers/socketio'
 
 const drawerWidth = 240;
 
@@ -49,81 +51,109 @@ const styles = theme => ({
   }
 });
 
-function ClippedDrawer(props) {
-  const { classes } = props;
+class ClippedDrawer extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      message: '',
+      io: io.getters.getSocket()
+    }
+    this.initSocketEvents()
+  }
 
-  return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <div className={classes.toolbar} />
-        <List>
-          {['Create A Room'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['Room Number 1'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-      <main className={classes.content}>
-        <br /> <br />
-        <Paper className={classes.chatGround} >
-        </Paper>
-        <Paper className={classes.root} elevation={1}>
-          <IconButton className={classes.iconButton} aria-label="Menu">
-            <MenuIcon />
-          </IconButton>
-          <InputBase fullWidth className={classes.input} placeholder="Message" />
-          <IconButton color="primary" className={classes.iconButton} aria-label="Directions">
-            <DirectionsIcon />
-          </IconButton>
-        </Paper>
-      </main>
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-        anchor="right"
-      >
-        <div className={classes.toolbar} />
-        <List>
-          {['Create A Room'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['Member One', 'Member Two'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-    </div>
-  );
+  updateMessage(event) {
+    this.setState({ message: event.target.value })
+    this.socketTyping()
+    console.log(this.state.message)
+  }
+  socketTyping = () => {
+    let user = STATE.getters.getUser()
+    let io = this.state.io
+    io.emit('typing', user.first_name)
+  }
+
+  initSocketEvents() {
+    let io = this.state.io
+    io.on('typing', (data) => {
+      console.log(`${data} is typing.`)
+    })
+  }
+
+  render() {
+    const { classes } = this.props;
+    return (
+      <div className={classes.root}>
+        <CssBaseline />
+        <Drawer
+          className={classes.drawer}
+          variant="permanent"
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+        >
+          <div className={classes.toolbar} />
+          <List>
+            {['Create A Room'].map((text, index) => (
+              <ListItem button key={text}>
+                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            {['Room Number 1'].map((text, index) => (
+              <ListItem button key={text}>
+                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            ))}
+          </List>
+        </Drawer>
+        <main className={classes.content}>
+          <br /> <br />
+          <Paper className={classes.chatGround} >
+          </Paper>
+          <Paper className={classes.root} elevation={1}>
+            <IconButton className={classes.iconButton} aria-label="Menu">
+              <MenuIcon />
+            </IconButton>
+            <InputBase fullWidth className={classes.input} onChange={this.updateMessage.bind(this)} placeholder="Message" />
+            <IconButton color="primary" className={classes.iconButton} aria-label="Directions">
+              <DirectionsIcon />
+            </IconButton>
+          </Paper>
+        </main>
+        <Drawer
+          className={classes.drawer}
+          variant="permanent"
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+          anchor="right"
+        >
+          <div className={classes.toolbar} />
+          <List>
+            {['Create A Room'].map((text, index) => (
+              <ListItem button key={text}>
+                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            {['Member One', 'Member Two'].map((text, index) => (
+              <ListItem button key={text}>
+                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            ))}
+          </List>
+        </Drawer>
+      </div>
+    );
+  }
 }
 
 ClippedDrawer.propTypes = {
