@@ -60,7 +60,7 @@ let Login = async function (req, res) {
 }
 
 let findByEmail = async function (req, res) {
-  console.log('here', email)
+  console.log(req.body)
   let email = req.body.email
   let user
   try {
