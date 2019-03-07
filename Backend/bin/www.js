@@ -83,6 +83,7 @@ io.use(async (socket, next) => {
     return next(new Error('History Error'))
   }
   console.log(socket.handshake.query)
+  socket.emit('welcome', user)
   return next()
 
 })
