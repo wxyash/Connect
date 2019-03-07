@@ -38,11 +38,53 @@ io.use(async (socket, next) => {
   let user
   try {
     user = await VerifyUser(query)
-    if (!user) { next(new Error('User Not Found.')) }
+    if (!user) {
+      next()
+      socket.emit('closeReason', 'User not found')
+      socket.disconnect()
+      return next(new Error('User Not Found.'))
+    }
   } catch (error) {
-    next(new Error('Authentication Error'))
+    next()
+    socket.emit('closeReason', error.message)
+    socket.disconnect()
+    return next(new Error('Authentication Error'))
   }
+  let data = {
+    connection_type: 'socket_join',
+    socket_id: socket.id,
+    user_id: user.id
+  }
+  let history
+  try {
+    history = await new ConnectionHistory(data)
+    if (!history) {
+      next()
+      socket.emit('closeReason', 'Error saving history')
+      socket.disconnect()
+      return next(new Error('History Error'))
+    }
+  } catch (error) {
+    next()
+    socket.emit('closeReason', error.message)
+    socket.disconnect()
+    return next(new Error('History Error'))
+  }
+
+  let savedHistory
+  try {
+    savedHistory = await history.save()
+    if (!savedHistory) {
+      socket.disconnect()
+      return next(new Error('History Error'))
+    }
+  } catch (error) {
+    socket.disconnect()
+    return next(new Error('History Error'))
+  }
+  console.log(socket.handshake.query)
   return next()
+
 })
 /**
  * Normalize a port into a number, string, or false.

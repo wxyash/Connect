@@ -4,15 +4,14 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { Link } from '@material-ui/core';
+import { Link } from 'react-router-dom'
+import { API } from '../controllers/api'
 
 const styles = theme => ({
   main: {
@@ -46,71 +45,95 @@ const styles = theme => ({
   },
 });
 
-function SignIn(props) {
-  const { classes } = props;
 
-  return (
-    <main className={classes.main}>
-      <CssBaseline />
-      <Paper className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign Up
+class Register extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: ''
+    }
+  }
+  formHandler(event) {
+    console.log(event.target)
+    const name = event.target.name
+    const value = event.target.value
+    this.setState({ [name]: value })
+  }
+  register = () => {
+    let data = {
+      first_name: this.state.firstName,
+      last_name: this.state.lastName,
+      email: this.state.email,
+      password: this.state.password
+    }
+    API.user.register(data).then((s) => {
+      console.log('Register Successfully', s)
+    }).catch((e) => {
+      console.log(e)
+      console.log(e.message)
+    })
+  }
+  render() {
+    const { classes } = this.props;
+    return (
+      <main className={classes.main} >
+        <CssBaseline />
+        <Paper className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <AccountCircle />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Register
         </Typography>
-        <form className={classes.form}>
-          <FormControl margin="normal"  fullWidth>
-            <InputLabel htmlFor="email">Email Address</InputLabel>
-            <Input id="email" name="email" autoComplete="email" autoFocus />
-          </FormControl>
-          <FormControl margin="normal"  fullWidth>
-            <InputLabel htmlFor="username">UserName</InputLabel>
-            <Input id="userName" name="username" autoComplete="username" autoFocus />
-          </FormControl>
-          <FormControl margin="normal"  fullWidth>
-            <InputLabel htmlFor="fname">First Name</InputLabel>
-            <Input id="fname" name="fname" autoComplete="fname" autoFocus />
-          </FormControl>
-          <FormControl margin="normal"  fullWidth>
-            <InputLabel htmlFor="lname">Last Name</InputLabel>
-            <Input id="lname" name="lname" autoComplete="lname" autoFocus />
-          </FormControl>
-          <FormControl margin="normal"  fullWidth>
-            <InputLabel htmlFor="password">Password</InputLabel>
-            <Input name="password" type="password" id="password" autoComplete="current-password" />
-          </FormControl>
+          <form className={classes.form}>
+            <FormControl margin="normal" fullWidth>
+              <InputLabel htmlFor="fname">First Name</InputLabel>
+              <Input onChange={this.formHandler.bind(this)} value={this.firstName} id="fname" name="firstName" autoComplete="fname" autoFocus />
+            </FormControl>
+            <FormControl margin="normal" fullWidth>
+              <InputLabel htmlFor="lname">Last Name</InputLabel>
+              <Input onChange={this.formHandler.bind(this)} value={this.lastName} id="lname" name="lastName" autoComplete="lname" />
+            </FormControl>
+            <FormControl margin="normal" fullWidth>
+              <InputLabel htmlFor="email">Email Address</InputLabel>
+              <Input onChange={this.formHandler.bind(this)} value={this.email} id="email" name="email" autoComplete="email" />
+            </FormControl>
+            <FormControl margin="normal" fullWidth>
+              <InputLabel htmlFor="password">Password</InputLabel>
+              <Input onChange={this.formHandler.bind(this)} value={this.password} name="password" type="password" id="password" autoComplete="current-password" />
+            </FormControl>
 
-          <Link to="/">
-          <Button
-            href="./"
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Back 
-          </Button>
-          </Link>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            <b> Register Me Now !  </b>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              onClick={this.register}
+            >
+              Submit
           </Button>
 
-        </form>
-      </Paper>
-    </main>
-  );
+          </form>
+        </Paper>
+        <Button
+          type="submit"
+          fullWidth
+          variant="text"
+          color="secondary"
+          className={classes.submit}
+          component={Link} to="/"
+        >
+          <b>Already Registered? Click to login</b>
+        </Button>
+      </main>
+    );
+  }
 }
 
-SignIn.propTypes = {
+Register.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SignIn);
+export default withStyles(styles)(Register);

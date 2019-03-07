@@ -1,19 +1,16 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { Link } from '@material-ui/core';
-import { Redirect } from 'react-router';
+import { Link } from 'react-router-dom'
+import { socket } from '../controllers/socketio'
 
 const styles = theme => ({
   main: {
@@ -47,67 +44,83 @@ const styles = theme => ({
   },
 });
 
+class SignIn extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      email: '',
+      password: ''
+    }
+  }
 
+  updateEmail(event) {
+    this.setState({ email: event.target.value })
+  }
 
-function SignIn(props) {
+  updatePassword(event) {
+    this.setState({ password: event.target.value })
+  }
 
-  
+  login = (e) => {
+    e.preventDefault()
+    let data = {
+      email: this.state.email,
+      password: this.state.password
+    }
+    let io = socket.methods.connect(data)
+    io.on('disconnect', (error) => {
+      console.log('Invalid Password')
+    })
+    io.on('connect', () => {
+      this.props.history.push('/Home')
+      console.log('Connected')
+      return
+    })
+  }
 
-  const { classes } = props;
-  
-
-  return (
-    <main className={classes.main}>
-      <CssBaseline />
-      <Paper className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
+  render() {
+    const { classes } = this.props;
+    return (
+      <main className={classes.main}>
+        <CssBaseline />
+        <Paper className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Login
         </Typography>
-        <form className={classes.form}>
-          <FormControl margin="normal"  fullWidth>
-            <InputLabel htmlFor="email">Email Address</InputLabel>
-            <Input id="email" name="email" autoComplete="email" autoFocus required/>
-          </FormControl>
-          <FormControl margin="normal"  fullWidth>
-            <InputLabel htmlFor="password">Password</InputLabel>
-            <Input name="password" type="password" id="password" autoComplete="current-password" required />
-          </FormControl>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Sign in
+          <form className={classes.form}>
+            <FormControl margin="normal" fullWidth>
+              <InputLabel htmlFor="email">Email Address</InputLabel>
+              <Input onChange={this.updateEmail.bind(this)} id="email" name="email" autoComplete="email" value={this.state.email} autoFocus required />
+            </FormControl>
+            <FormControl margin="normal" fullWidth>
+              <InputLabel htmlFor="password">Password</InputLabel>
+              <Input onChange={this.updatePassword.bind(this)} name="password" type="password" id="password" value={this.state.password} autoComplete="current-password" required />
+            </FormControl>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              onClick={this.login}
+            >
+              Sign in
           </Button>
-          
-        
-        </form>
-
+          </form>
+        </Paper>
+        <br />
         <Button
-            href="./Register"
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            onPress={() => this.props.navigation.push('./Register.js')}
-            className={classes.submit}
-          >
-            Sign up
+          type="submit"
+          fullWidth
+          variant="text"
+          color="secondary"
+          component={Link} to="/Register"
+        >
+          Don't Have An Account? Sign Up.
           </Button>
-         
-      </Paper>
-
-    </main>
-  );
-  
+      </main>
+    );
+  }
 }
-
-
-
-
 export default withStyles(styles)(SignIn);

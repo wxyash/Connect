@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-// const car = require('../controllers/car');
+const user = require('../controllers/user')
 
 /* GET car listing. */
 // router.get('/find', car.findCarByCarId);
@@ -9,5 +9,6 @@ const router = express.Router();
 // router.post('/register', car.createCar);
 // router.patch('/update', car.updateCar)
 // router.delete('/delete',car.deleteCar);
-
+router.post('/register', user.Register)
+router.post('/find', user.findByEmail)
 module.exports = router;

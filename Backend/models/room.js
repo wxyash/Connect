@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const ChatRoomSchema = mongoose.Schema({
   time_created: {
-    default: Date.now()
+    default: Date.now,
+    type: Date
   },
   room_size: {
     type: Number,

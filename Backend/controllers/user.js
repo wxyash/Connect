@@ -24,12 +24,12 @@ let Register = async function (req, res) {
 
   let savedUser
   try {
-    savedUser = newUser.save()
+    savedUser = await newUser.save()
     if (!savedUser) { return badRequest('Error saving user', {}, res) }
-    return success('User created, you may login.'. { user: savedUser }, res)
   } catch (error) {
     return badRequest('Cannot register user, error saving', { error: error.message }, res)
   }
+  return success('User created, you may login.', { user: savedUser }, res)
 }
 
 let Login = async function (req, res) {
@@ -59,7 +59,24 @@ let Login = async function (req, res) {
   }
 }
 
+let findByEmail = async function (req, res) {
+  console.log('here', email)
+  let email = req.body.email
+  let user
+  try {
+    user = await User.find({ email: email })
+    console.log(user)
+    if (!user) {
+      return badRequest(`Cannot find user`, {}, res)
+    }
+  } catch (error) {
+    return badRequest(`Cannot find user, Error: ${error.message}`, {}, res)
+  }
+  success('User', user, res)
+}
+
 module.exports = {
   Login,
-  Register
+  Register,
+  findByEmail
 }

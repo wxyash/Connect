@@ -25,3 +25,28 @@ exports.forbidden = async function (msg, payload, res) {
 exports.notFound = async function (msg, payload, res) {
   sendResponse(404, msg, payload, res);
 };
+async function sendResponse(code, msg, payload, res) {
+  if (!payload) {
+    return res.status(code).send({
+      msg: msg,
+    });
+  } else {
+    return res.status(code).send({
+      msg: msg,
+      payload: payload,
+    });
+  }
+}
+
+exports.sendRes = async function (code, msg, payload, res) {
+  if (!payload) {
+    return res.status(code).send({
+      msg: msg,
+    });
+  } else {
+    return res.status(code).send({
+      msg: msg,
+      payload: payload,
+    });
+  }
+}
