@@ -17,6 +17,15 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import DirectionsIcon from '@material-ui/icons/Directions';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import { Link } from 'react-router-dom';
+import { red } from '@material-ui/core/colors';
+
 
 const drawerWidth = 240;
 
@@ -43,10 +52,18 @@ const styles = theme => ({
     position: 'fixed',
     bottom: '0'
   },
+
   chatGround: {
     'margin-bottom': '20px',
     height: '75vh'
+  },
+  // Button:hover {
+  //   'background-color': 'red'
+  // }
+  Button:{
+    'background-color': 'red'
   }
+  
 });
 
 function ClippedDrawer(props) {
@@ -63,7 +80,14 @@ function ClippedDrawer(props) {
         }}
       >
         <div className={classes.toolbar} />
+        <Button
+              variant="contained"
+              component={Link} to="/"
+        >
+            <b>Log Out</b> 
+        </Button> 
         <List>
+       
           {['Create A Room'].map((text, index) => (
             <ListItem button key={text}>
               <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
