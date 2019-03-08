@@ -69,6 +69,19 @@ class ChatArea extends React.Component {
     }
   }
 
+  sendMessage2 = (e) => {
+    // if (e.key === 'Enter') {
+      let data = {
+        sender: STATE.getters.getUser().first_name,
+        message: this.state.message
+      }
+      let io = this.state.io
+      io.emit('chat', data)
+      this.setState({ message: '' })
+    // }
+
+  }
+
   initSocketEvents = () => {
     let io = this.state.io_instance
     io.on('typing', (data) => {
@@ -86,25 +99,27 @@ class ChatArea extends React.Component {
     return (
       <div className={classes.root}>
         <main className={classes.content}>
-          <Paper className={classes.chatGround} >
-            {this.state.typing !== '' ? <p>{this.state.typing}</p> : <p></p>}
-            <br />
-            <br />
-            <div>
-              {STATE.getters.getMessages().map((message, index) => (
-                <p key={index}> {message.sender}: {message.message} </p>
-              ))}
-            </div>
-          </Paper>
-          <Paper className={classes.root} elevation={1}>
-            <IconButton className={classes.iconButton} aria-label="Menu">
-              <MenuIcon />
-            </IconButton>
-            <InputBase fullWidth className={classes.input} onKeyPress={this.sendMessage.bind(this)} onChange={this.updateMessage.bind(this)} placeholder="Message" />
-            <IconButton color="primary" className={classes.iconButton} aria-label="Directions">
-              <DirectionsIcon />
-            </IconButton>
-          </Paper>
+        <div item xs={12}>
+            <Paper className={classes.chatGround} >
+              {this.state.typing !== '' ? <p>{this.state.typing}</p> : <p></p>}
+              <br />
+              <br />
+              <div>
+                {STATE.getters.getMessages().map((message, index) => (
+                  <p key={index}> {message.sender}: {message.message} </p>
+                ))}
+              </div>
+            </Paper>
+            <Paper className={classes.root} elevation={1}>
+              <IconButton className={classes.iconButton} aria-label="Menu">
+                <MenuIcon />
+              </IconButton>
+              <InputBase fullWidth className={classes.input} onKeyPress={this.sendMessage.bind(this)} onChange={this.updateMessage.bind(this)} placeholder="Message" />
+              <IconButton color="primary" onClick={this.sendMessage2.bind(this)} className={classes.iconButton}  aria-label="Directions">
+                <DirectionsIcon />
+              </IconButton>
+            </Paper>
+          </div>
         </main>
       </div>
     );
