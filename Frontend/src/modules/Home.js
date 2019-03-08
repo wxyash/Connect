@@ -4,31 +4,20 @@ import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
+import Modal from '@material-ui/core/Modal';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
-import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
-import DirectionsIcon from '@material-ui/icons/Directions';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { Link } from 'react-router-dom';
-import { red } from '@material-ui/core/colors';
-
 import STATE from '../global/state'
-import io from '../controllers/socketio'
-
+import ChatArea from './Chat/ChatArea'
+import { Link } from 'react-router-dom'
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -59,41 +48,39 @@ const styles = theme => ({
     'margin-bottom': '20px',
     height: '75vh'
   },
-  // Button:hover {
-  //   'background-color': 'red'
-  // }
   Button: {
     'background-color': 'red'
-  }
-
+  },
+  paper: {
+    position: 'absolute',
+    width: theme.spacing.unit * 50,
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing.unit * 4,
+    outline: 'none',
+  },
 });
+
+function getModalStyle() {
+  const top = 50
+  const left = 50
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+  };
+}
 
 class ClippedDrawer extends React.Component {
   constructor() {
     super()
     this.state = {
-      message: '',
-      io: io.getters.getSocket()
+      createRoomModal: false
     }
-    this.initSocketEvents()
   }
 
-  updateMessage(event) {
-    this.setState({ message: event.target.value })
-    this.socketTyping()
-    console.log(this.state.message)
-  }
-  socketTyping = () => {
-    let user = STATE.getters.getUser()
-    let io = this.state.io
-    io.emit('typing', user.first_name)
-  }
-
-  initSocketEvents() {
-    let io = this.state.io
-    io.on('typing', (data) => {
-      console.log(`${data} is typing.`)
-    })
+  closeModal = () => {
+    this.setState({ createRoomModal: false })
   }
 
   render() {
@@ -110,10 +97,18 @@ class ClippedDrawer extends React.Component {
         >
           <div className={classes.toolbar} />
           <Button
-            variant="contained"
+            variant="text"
+            color="secondary"
             component={Link} to="/"
           >
             <b>Log Out</b>
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => { this.setState({ createRoomModal: true }) }}
+          >
+            Create Room
           </Button>
           <List>
             {['Create A Room'].map((text, index) => (
@@ -134,18 +129,31 @@ class ClippedDrawer extends React.Component {
           </List>
         </Drawer>
         <main className={classes.content}>
-          <br /> <br />
-          <Paper className={classes.chatGround} >
-          </Paper>
-          <Paper className={classes.root} elevation={1}>
-            <IconButton className={classes.iconButton} aria-label="Menu">
-              <MenuIcon />
-            </IconButton>
-            <InputBase fullWidth className={classes.input} onChange={this.updateMessage.bind(this)} placeholder="Message" />
-            <IconButton color="primary" className={classes.iconButton} aria-label="Directions">
-              <DirectionsIcon />
-            </IconButton>
-          </Paper>
+          <Modal
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+            open={this.state.createRoomModal}
+            onClose={this.closeModal}
+          >
+            <div style={getModalStyle()} className={classes.paper}>
+              <FormControl margin="normal" fullWidth>
+                <InputLabel htmlFor="roomname">Room Name</InputLabel>
+                <Input id="email" name="roomname" autoFocus required />
+              </FormControl>
+              <FormControl margin="normal" fullWidth>
+                <InputLabel htmlFor="password">Password</InputLabel>
+                <Input name="password" type="password" id="password" autoComplete="current-password" required />
+              </FormControl>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={this.createRoom}
+              >
+                Create Room
+          </Button>
+            </div>
+          </Modal>
+          <ChatArea />
         </main>
         <Drawer
           className={classes.drawer}

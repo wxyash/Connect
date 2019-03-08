@@ -1,11 +1,15 @@
 const state = {
   user: '',
   rooms: [],
+  messages: []
 }
 
 const getters = {
   getUser: function () {
     return state.user
+  },
+  getMessages: function () {
+    return state.messages
   }
 }
 
@@ -23,6 +27,12 @@ const setters = {
       if (!state.rooms) {
         reject('Can\'t')
       }
+    })
+  },
+  addMessage(message) {
+    return new Promise((res, rej) => {
+      state.messages.push(message)
+      res()
     })
   }
 }
