@@ -9,6 +9,7 @@ var debug = require('debug')('backend:server');
 var http = require('http');
 const { ConnectionHistory } = require('../models/history')
 const { VerifyUser } = require('../middleware/auth')
+const { initSocketIO } = require('../utils/socket')
 
 /**
  * Get port from environment and store in Express.
@@ -32,65 +33,8 @@ server.listen(port, () => {
 });
 server.on('error', onError);
 server.on('listening', onListening);
-const io = require('socket.io')(server)
-io.use(async (socket, next) => {
-  let query = socket.handshake.query
-  let user
-  try {
-    user = await VerifyUser(query)
-    if (!user) {
-      next()
-      socket.emit('closeReason', 'User not found')
-      socket.disconnect()
-      return next(new Error('User Not Found.'))
-    }
-  } catch (error) {
-    next()
-    socket.emit('closeReason', error.message)
-    socket.disconnect()
-    return next(new Error('Authentication Error'))
-  }
-  let data = {
-    connection_type: 'socket_join',
-    socket_id: socket.id,
-    user_id: user.id
-  }
-  let history
-  try {
-    history = await new ConnectionHistory(data)
-    if (!history) {
-      next()
-      socket.emit('closeReason', 'Error saving history')
-      socket.disconnect()
-      return next(new Error('History Error'))
-    }
-  } catch (error) {
-    next()
-    socket.emit('closeReason', error.message)
-    socket.disconnect()
-    return next(new Error('History Error'))
-  }
+initSocketIO(server)
 
-  let savedHistory
-  try {
-    savedHistory = await history.save()
-    if (!savedHistory) {
-      socket.disconnect()
-      return next(new Error('History Error'))
-    }
-  } catch (error) {
-    socket.disconnect()
-    return next(new Error('History Error'))
-  }
-  console.log(socket.handshake.query)
-  socket.emit('welcome', user)
-  next()
-
-  socket.on('typing', (data) => {
-    io.sockets.emit('typing', data)
-  })
-
-})
 /**
  * Normalize a port into a number, string, or false.
  */
@@ -149,8 +93,4 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
-}
-
-module.exports = {
-  io
 }

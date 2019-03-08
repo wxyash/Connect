@@ -1,12 +1,16 @@
 const mongoose = require('mongoose');
 const ChatRoomSchema = mongoose.Schema({
+  user_id: {
+    type: mongoose.Schema.ObjectId,
+    required: true
+  },
+  name: {
+    type: 'String',
+    required: true
+  },
   time_created: {
     default: Date.now,
     type: Date
-  },
-  room_size: {
-    type: Number,
-    required: true
   },
   is_password_protected: {
     type: Boolean,
