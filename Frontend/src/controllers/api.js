@@ -12,5 +12,13 @@ export const API = {
     findByEmail: function (email) {
       return axios.post(URL + `/user/find`, email)
     }
+  },
+  rooms: {
+    create: function (data) {
+      return axios.post(URL + '/room/create', data)
+    },
+    find: function () {
+      return axios.get(URL + '/room/find')
+    }
   }
 }

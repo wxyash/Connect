@@ -12,7 +12,7 @@ module.exports.createChatRoom = async function (req, res) {
     };
   });
 
-  let data = _.pick(req.body, ['user_id', 'room_name', 'password'])
+  let data = _.pick(req.body, ['user_id', 'name', 'password'])
 
   if (Object.keys(errors).length > 1) {
     return badRequest('Error creating a room', errors, res)

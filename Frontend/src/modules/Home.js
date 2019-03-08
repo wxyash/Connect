@@ -18,6 +18,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import STATE from '../global/state'
 import ChatArea from './Chat/ChatArea'
 import { Link } from 'react-router-dom'
+import { API } from '../controllers/api'
+import socket_io from '../controllers/socketio'
+
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -75,12 +78,56 @@ class ClippedDrawer extends React.Component {
   constructor() {
     super()
     this.state = {
-      createRoomModal: false
+      createRoomModal: false,
+      roomName: '',
+      password: '',
+      roomsList: [],
+      io_instance: socket_io.getters.getSocket()
     }
+    API.rooms.find().then(async (s) => {
+      await STATE.setters.setRoom(s.data.payload)
+      this.getRooms()
+    }).catch((e) => {
+      console.log(e)
+      this.getRooms()
+    })
   }
 
   closeModal = () => {
     this.setState({ createRoomModal: false })
+  }
+
+  createRoom = async () => {
+    let data = {
+      name: this.state.roomName,
+      password: this.state.password,
+      user_id: STATE.getters.getUser()._id
+    }
+    await API.rooms.create(data).then(async (s) => {
+      await STATE.setters.addRoom(s.data.payload)
+    }).catch((e) => {
+      console.log('error', e)
+    })
+    this.getRooms()
+  }
+
+  updateRoomName = (e) => {
+    this.setState({ roomName: e.target.value })
+  }
+  updateRoomPassword = (e) => {
+    this.setState({ password: e.target.value })
+  }
+
+  getRooms = () => {
+    this.setState({ roomsList: STATE.getters.getRooms() })
+  }
+
+  joinRoom = (room) => {
+    console.log(room)
+    let chatRoom = socket_io.methods.joinNameSpace(room.name)
+    this.setState({ io_instance: chatRoom })
+    console.log('Chatroom', chatRoom)
+    return chatRoom
   }
 
   render() {
@@ -111,19 +158,15 @@ class ClippedDrawer extends React.Component {
             Create Room
           </Button>
           <List>
-            {['Create A Room'].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
+            <ListItem>
+              <ListItemText primary="Available Chat ROoms" />
+            </ListItem>
           </List>
           <Divider />
           <List>
-            {['Room Number 1'].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
+            {this.state.roomsList.map((room, index) => (
+              <ListItem onClick={() => { this.joinRoom(room) }} button key={room._id}>
+                <ListItemText primary={room.name} />
               </ListItem>
             ))}
           </List>
@@ -138,11 +181,11 @@ class ClippedDrawer extends React.Component {
             <div style={getModalStyle()} className={classes.paper}>
               <FormControl margin="normal" fullWidth>
                 <InputLabel htmlFor="roomname">Room Name</InputLabel>
-                <Input id="email" name="roomname" autoFocus required />
+                <Input onChange={this.updateRoomName.bind(this)} value={this.state.roomName} id="email" name="roomname" autoFocus required />
               </FormControl>
               <FormControl margin="normal" fullWidth>
                 <InputLabel htmlFor="password">Password</InputLabel>
-                <Input name="password" type="password" id="password" autoComplete="current-password" required />
+                <Input onChange={this.updateRoomPassword.bind(this)} value={this.state.password} name="password" type="password" id="password" autoComplete="current-password" required />
               </FormControl>
               <Button
                 variant="contained"
@@ -153,7 +196,7 @@ class ClippedDrawer extends React.Component {
           </Button>
             </div>
           </Modal>
-          <ChatArea />
+          <ChatArea key socketInstace={this.state.io_instance} />
         </main>
         <Drawer
           className={classes.drawer}

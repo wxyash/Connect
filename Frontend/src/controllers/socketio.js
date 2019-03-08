@@ -8,6 +8,10 @@ export const socket = {
     connect: function (loginData) {
       socket_instance = io(URL, { query: loginData })
       return socket_instance
+    },
+    joinNameSpace: function (room) {
+      socket_instance = io.connect(`${URL}/${room}`)
+      return socket_instance
     }
   },
   getters: {

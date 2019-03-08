@@ -5,9 +5,8 @@ import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import DirectionsIcon from '@material-ui/icons/Directions';
-
 import STATE from '../../global/state'
-import io from '../../controllers/socketio'
+import socket_io from '../../controllers/socketio'
 
 const styles = theme => ({
   root: {
@@ -32,15 +31,19 @@ const styles = theme => ({
 
 });
 class ChatArea extends React.Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       message: '',
-      io: io.getters.getSocket(),
+      io_instance: this.props.socketInstace,
       typing: '',
       messages: STATE.getters.getMessages()
     }
     this.initSocketEvents()
+  }
+  componentWillReceiveProps(newProps) {
+    this.setState({ io_instance: newProps.socketInstace })
+    console.log('CHILD PROPS CHANGED')
   }
 
   updateMessage(event) {
@@ -49,24 +52,25 @@ class ChatArea extends React.Component {
   }
   socketTyping = () => {
     let user = STATE.getters.getUser()
-    let io = this.state.io
+    let io = this.state.io_instance
     io.emit('typing', user.first_name)
   }
 
   sendMessage = (e) => {
     if (e.key === 'Enter') {
+      console.log(this.state.io_instance)
       let data = {
         sender: STATE.getters.getUser().first_name,
         message: this.state.message
       }
-      let io = this.state.io
+      let io = this.state.io_instance
       io.emit('chat', data)
       this.setState({ message: '' })
     }
   }
 
   initSocketEvents = () => {
-    let io = this.state.io
+    let io = this.state.io_instance
     io.on('typing', (data) => {
       let typingText = `${data} is typing.`
       this.setState({ typing: typingText })

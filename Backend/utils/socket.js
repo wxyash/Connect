@@ -8,6 +8,7 @@ let roomConnections = async function (io) {
     for (const room of rooms) {
       io.of(room.name).on('connection', (socket) => {
         socket.on('chat', (data) => {
+          console.log(data, 'Knock knock')
           socket.emit('chat', data)
         })
       })
@@ -66,7 +67,6 @@ module.exports.initSocketIO = async function (server) {
       socket.disconnect()
       return next(new Error('History Error'))
     }
-    console.log(socket.handshake.query)
     socket.emit('welcome', user)
     next()
 
@@ -78,9 +78,9 @@ module.exports.initSocketIO = async function (server) {
       await roomConnections(io)
     })
 
-    socket.on('chat', (data) => {
-      socket.broadcast.emit('chat', data)
-    })
+    // socket.on('chat', (data) => {
+    //   socket.broadcast.emit('chat', data)
+    // })
 
     await roomConnections(io)
   })
