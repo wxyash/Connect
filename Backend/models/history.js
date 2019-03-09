@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const ConnectionHistorySchema = mongoose.Schema({
   connection_type: {
     type: String,
-    enum: ['socket_join', ' socket_leave', 'user_join', 'user_leave'],
+    enum: ['socket_join', 'socket_leave', 'user_join', 'user_leave'],
     required: true
   },
   time_created: {

@@ -59,28 +59,53 @@ module.exports.initSocketIO = async function (server) {
     socket.emit('welcome', user)
     next()
 
-    socket.on('join_room', async (room) => {
-      console.log(room)
+    socket.on('join_room', async (data) => {
       let rooms = await ChatRoom.find({})
       let roomsNames = rooms.map((item) => item.name)
-      if (roomsNames.includes(room)) {
-        socket.join(room)
-        io.of('/').in(room).emit('user_join', 'A new user has joined the chat')
-        socket.in(room).on('chat', (data) => {
-          io.of('/').in(room).emit('chat', data)
+      if (roomsNames.includes(data.room)) {
+        socket.join(data.room)
+        // SAVE TO HISTORY DB
+        let Sroom = rooms.find((item) => item.name === data.room)
+        let historyData = {
+          connection_type: 'user_join',
+          socket_id: socket.id,
+          user_id: user.id,
+          room_id: Sroom._id
+        }
+        let saveHistory = await new ConnectionHistory(historyData).save()
+        io.emit('user_join', `${data.user.toUpperCase()} has JOINED the ${data.room.toUpperCase()} at ${new Date().toISOString()}`)
+        socket.in(data.room).on('chat', (sendData) => {
+          console.log('HERE IN THE CHAT', sendData)
+          io.of('/').in(data.room).emit('chat', sendData)
         })
-        socket.in(room).on('typing', (data) => {
-          socket.broadcast.to(room, data)
+        socket.in(data.room).on('typing', (sendData) => {
+          socket.to(data.room).emit('typing', sendData)
         })
       }
     })
-    socket.on('leave_room', async (room) => {
+    socket.on('leave_room', async (data) => {
       let rooms = await ChatRoom.find({})
       let roomsNames = rooms.map((item) => item.name)
-      if (roomsNames.includes(room)) {
-        io.of('/').in(room).emit('user_leave', 'A user has left the chat')
-        socket.leave(room)
+      if (roomsNames.includes(data.room)) {
+        let Sroom = rooms.find((item) => item.name === data.room)
+        let historyData = {
+          connection_type: 'user_leave',
+          socket_id: socket.id,
+          user_id: user.id,
+          room_id: Sroom._id
+        }
+        let saveHistory = await new ConnectionHistory(historyData).save()
+        io.emit('user_leave', `${data.user.toUpperCase()} has LEFT the ${data.room.toUpperCase()} at ${new Date().toISOString()}`)
+        socket.leave(data.room)
       }
+    })
+    socket.on('disconnect', async () => {
+      let historyData = {
+        connection_type: 'socket_leave',
+        socket_id: socket.id,
+        user_id: user.id,
+      }
+      let saveHistory = await new ConnectionHistory(historyData).save()
     })
   })
 }
