@@ -82,7 +82,8 @@ class ClippedDrawer extends React.Component {
       roomName: '',
       password: '',
       roomsList: [],
-      io_instance: socket_io.getters.getSocket()
+      io_instance: socket_io.getters.getSocket(),
+      currentRoom: ''
     }
     API.rooms.find().then(async (s) => {
       await STATE.setters.setRoom(s.data.payload)
@@ -105,6 +106,7 @@ class ClippedDrawer extends React.Component {
     }
     await API.rooms.create(data).then(async (s) => {
       await STATE.setters.addRoom(s.data.payload)
+      this.closeModal()
     }).catch((e) => {
       console.log('error', e)
     })
@@ -123,11 +125,15 @@ class ClippedDrawer extends React.Component {
   }
 
   joinRoom = (room) => {
-    console.log(room)
-    let chatRoom = socket_io.methods.joinNameSpace(room.name)
-    this.setState({ io_instance: chatRoom })
-    console.log('Chatroom', chatRoom)
-    return chatRoom
+    if (this.state.currentRoom !== '') {
+      this.state.io_instance.emit('leave_room', this.state.currentRoom)
+    }
+    if (this.state.currentRoom === room.room) {
+      return
+    }
+    let room_io = this.state.io_instance.emit('join_room', room.name)
+    this.setState({ io_instance: room_io })
+    this.setState({ currentRoom: room.name })
   }
 
   render() {

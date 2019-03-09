@@ -37,7 +37,7 @@ class ChatArea extends React.Component {
       message: '',
       io_instance: this.props.socketInstace,
       typing: '',
-      messages: STATE.getters.getMessages()
+      messages: STATE.getters.getMessages(),
     }
     this.initSocketEvents()
   }
@@ -66,18 +66,19 @@ class ChatArea extends React.Component {
       let io = this.state.io_instance
       io.emit('chat', data)
       this.setState({ message: '' })
+      e.target.value = ''
     }
   }
 
   sendMessage2 = (e) => {
     // if (e.key === 'Enter') {
-      let data = {
-        sender: STATE.getters.getUser().first_name,
-        message: this.state.message
-      }
-      let io = this.state.io
-      io.emit('chat', data)
-      this.setState({ message: '' })
+    let data = {
+      sender: STATE.getters.getUser().first_name,
+      message: this.state.message
+    }
+    let io = this.state.io
+    io.emit('chat', data)
+    this.setState({ message: '' })
     // }
 
   }
@@ -92,6 +93,12 @@ class ChatArea extends React.Component {
       await STATE.setters.addMessage(data)
       this.setState({ typing: '' })
     })
+    io.on('user_leave', async (data) => {
+      console.log(data)
+    })
+    io.on('user_join', async (data) => {
+      console.log(data)
+    })
   }
 
   render() {
@@ -99,7 +106,7 @@ class ChatArea extends React.Component {
     return (
       <div className={classes.root}>
         <main className={classes.content}>
-        <div item xs={12}>
+          <div item xs={12}>
             <Paper className={classes.chatGround} >
               {this.state.typing !== '' ? <p>{this.state.typing}</p> : <p></p>}
               <br />
@@ -115,7 +122,7 @@ class ChatArea extends React.Component {
                 <MenuIcon />
               </IconButton>
               <InputBase fullWidth className={classes.input} onKeyPress={this.sendMessage.bind(this)} onChange={this.updateMessage.bind(this)} placeholder="Message" />
-              <IconButton color="primary" onClick={this.sendMessage2.bind(this)} className={classes.iconButton}  aria-label="Directions">
+              <IconButton color="primary" onClick={this.sendMessage2.bind(this)} className={classes.iconButton} aria-label="Directions">
                 <DirectionsIcon />
               </IconButton>
             </Paper>

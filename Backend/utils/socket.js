@@ -3,17 +3,6 @@ const { ConnectionHistory } = require('../models/history')
 const { VerifyUser } = require('../middleware/auth')
 const { ChatRoom } = require('../models/room')
 let roomConnections = async function (io) {
-  let rooms = await ChatRoom.find({})
-  if (rooms.length > 0) {
-    for (const room of rooms) {
-      io.of(room.name).on('connection', (socket) => {
-        socket.on('chat', (data) => {
-          console.log(data, 'Knock knock')
-          socket.emit('chat', data)
-        })
-      })
-    }
-  }
 }
 
 module.exports.initSocketIO = async function (server) {
@@ -70,19 +59,29 @@ module.exports.initSocketIO = async function (server) {
     socket.emit('welcome', user)
     next()
 
-    socket.on('typing', (data) => {
-      io.sockets.emit('typing', data)
+    socket.on('join_room', async (room) => {
+      console.log(room)
+      let rooms = await ChatRoom.find({})
+      let roomsNames = rooms.map((item) => item.name)
+      if (roomsNames.includes(room)) {
+        socket.join(room)
+        io.of('/').in(room).emit('user_join', 'A new user has joined the chat')
+        socket.in(room).on('chat', (data) => {
+          io.of('/').in(room).emit('chat', data)
+        })
+        socket.in(room).on('typing', (data) => {
+          socket.broadcast.to(room, data)
+        })
+      }
     })
-
-    socket.on('refresh_rooms', async (data) => {
-      await roomConnections(io)
+    socket.on('leave_room', async (room) => {
+      let rooms = await ChatRoom.find({})
+      let roomsNames = rooms.map((item) => item.name)
+      if (roomsNames.includes(room)) {
+        io.of('/').in(room).emit('user_leave', 'A user has left the chat')
+        socket.leave(room)
+      }
     })
-
-    // socket.on('chat', (data) => {
-    //   socket.broadcast.emit('chat', data)
-    // })
-
-    await roomConnections(io)
   })
 }
 
