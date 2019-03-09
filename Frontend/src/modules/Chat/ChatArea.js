@@ -5,8 +5,11 @@ import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import DirectionsIcon from '@material-ui/icons/Directions';
-import STATE from '../../global/state'
-import socket_io from '../../controllers/socketio'
+import Grid from '@material-ui/core/Grid';
+import STATE from '../../global/state';
+import '../../App.css'
+
+// import socket_io from '../../controllers/socketio'
 
 const styles = theme => ({
   root: {
@@ -14,7 +17,7 @@ const styles = theme => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing.unit * 3,
+    // padding: theme.spacing.unit * 3,
   },
   toolbar: theme.mixins.toolbar,
   chatBoxPosition: {
@@ -75,7 +78,7 @@ class ChatArea extends React.Component {
         sender: STATE.getters.getUser().first_name,
         message: this.state.message
       }
-      let io = this.state.io
+      let io = this.state.io_instance
       io.emit('chat', data)
       this.setState({ message: '' })
     // }
@@ -99,29 +102,40 @@ class ChatArea extends React.Component {
     return (
       <div className={classes.root}>
         <main className={classes.content}>
-        <div item xs={12}>
-            <Paper className={classes.chatGround} >
-              {this.state.typing !== '' ? <p>{this.state.typing}</p> : <p></p>}
-              <br />
-              <br />
-              <div>
-                {STATE.getters.getMessages().map((message, index) => (
-                  <p key={index}> {message.sender}: {message.message} </p>
-                ))}
-              </div>
-            </Paper>
-            <Paper className={classes.root} elevation={1}>
-              <IconButton className={classes.iconButton} aria-label="Menu">
-                <MenuIcon />
-              </IconButton>
-              <InputBase fullWidth className={classes.input} onKeyPress={this.sendMessage.bind(this)} onChange={this.updateMessage.bind(this)} placeholder="Message" />
-              <IconButton color="primary" onClick={this.sendMessage2.bind(this)} className={classes.iconButton}  aria-label="Directions">
-                <DirectionsIcon />
-              </IconButton>
-            </Paper>
+        <Grid container>
+          <Grid item xs={8}>
+              <Paper className={classes.chatGround} >
+                {this.state.typing !== '' ? <p>{this.state.typing}</p> : <p></p>}
+                <br />
+                <br />
+                <div className="padding-all">              
+                  {STATE.getters.getMessages().map((message, index) => (
+                    <p key={index}> {message.sender}: {message.message} </p>
+                  ))}
+                </div>
+              </Paper>
+              <Paper className={classes.root} elevation={1}>
+                <IconButton className={classes.iconButton} aria-label="Menu">
+                  <MenuIcon />
+                </IconButton>
+                <InputBase fullWidth className={classes.input} onKeyPress={this.sendMessage.bind(this)} onChange={this.updateMessage.bind(this)} placeholder="Message" />
+                <IconButton color="primary" onClick={this.sendMessage2.bind(this)} className={classes.iconButton}  aria-label="Directions">
+                  <DirectionsIcon />
+                </IconButton>
+              </Paper>
+              </Grid>
+              <Grid item xs={4}>
+                  <div className="margin-top-Bottom">
+                    <Paper className={classes.chatGround}>
+                        <div className="padding-all">
+                            <h4>History</h4>
+                        </div>
+                    </Paper>
+                  </div>
+              </Grid>
+              </Grid>
+            </main>
           </div>
-        </main>
-      </div>
     );
   }
 }

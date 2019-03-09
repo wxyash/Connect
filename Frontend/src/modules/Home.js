@@ -170,6 +170,25 @@ class ClippedDrawer extends React.Component {
               </ListItem>
             ))}
           </List>
+          <Divider/>
+          <List>
+            {['Number of Users'].map((text, index) => (
+              <ListItem button key={text}>
+                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            {['Member One', 'Member Two'].map((text, index) => (
+              <ListItem button key={text}>
+                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            ))}
+          </List>
+          
         </Drawer>
         <main className={classes.content}>
           <Modal
@@ -198,7 +217,7 @@ class ClippedDrawer extends React.Component {
           </Modal>
           <ChatArea key socketInstace={this.state.io_instance} />
         </main>
-        <Drawer
+        {/* <Drawer
           className={classes.drawer}
           variant="permanent"
           classes={{
@@ -224,7 +243,7 @@ class ClippedDrawer extends React.Component {
               </ListItem>
             ))}
           </List>
-        </Drawer>
+        </Drawer> */}
       </div>
     );
   }
