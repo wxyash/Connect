@@ -30,6 +30,19 @@
 .padding-all{
   padding: 15px 25px;
 }
+
+.fixOverFlow {
+    overflow-y: scroll
+  }
+.history {
+  min-height: 75vh;
+  max-height: 75vh;
+}
+
+.chatGround{
+    margin-bottom: '20px';
+    height: '75vh';
+  }
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
