@@ -125,21 +125,13 @@ class ClippedDrawer extends React.Component {
   }
 
   joinRoom = (room) => {
-    if (room.name === this.state.currentRoom) {
+    if (this.state.currentRoom !== '') {
+      this.state.io_instance.emit('leave_room', this.state.currentRoom)
+    }
+    if (this.state.currentRoom === room.room) {
       return
     }
-    let data = {
-      user: STATE.getters.getUser().first_name,
-      room: room.name
-    }
-    let leaveData = {
-      user: STATE.getters.getUser().first_name,
-      room: this.state.currentRoom
-    }
-    if (this.state.currentRoom !== room.name) {
-      let room_io = this.state.io_instance.emit('leave_room', leaveData)
-    }
-    let room_io = this.state.io_instance.emit('join_room', data)
+    let room_io = this.state.io_instance.emit('join_room', room.name)
     this.setState({ io_instance: room_io })
     this.setState({ currentRoom: room.name })
   }
@@ -184,7 +176,7 @@ class ClippedDrawer extends React.Component {
               </ListItem>
             ))}
           </List>
-          <Divider />
+          <Divider/>
           <List>
             {['Number of Users'].map((text, index) => (
               <ListItem button key={text}>
@@ -202,7 +194,7 @@ class ClippedDrawer extends React.Component {
               </ListItem>
             ))}
           </List>
-
+          
         </Drawer>
         <main className={classes.content}>
           <Modal
@@ -229,7 +221,7 @@ class ClippedDrawer extends React.Component {
           </Button>
             </div>
           </Modal>
-          <ChatArea key chatRoom={this.state.currentRoom} socketInstace={this.state.io_instance} />
+          <ChatArea key socketInstace={this.state.io_instance} />
         </main>
         {/* <Drawer
           className={classes.drawer}

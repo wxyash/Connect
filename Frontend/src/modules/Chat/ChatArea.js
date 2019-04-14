@@ -41,7 +41,6 @@ class ChatArea extends React.Component {
       io_instance: this.props.socketInstace,
       typing: '',
       messages: STATE.getters.getMessages(),
-      history: []
     }
     this.initSocketEvents()
   }
@@ -83,7 +82,6 @@ class ChatArea extends React.Component {
     let io = this.state.io_instance
     io.emit('chat', data)
     this.setState({ message: '' })
-    e.target.value = ''
     // }
 
   }
@@ -95,21 +93,14 @@ class ChatArea extends React.Component {
       this.setState({ typing: typingText })
     })
     io.on('chat', async (data) => {
-      console.log(io.rooms)
       await STATE.setters.addMessage(data)
       this.setState({ typing: '' })
     })
     io.on('user_leave', async (data) => {
-      console.log('user left')
-      let history = this.state.history
-      history.push(data)
-      this.setState({ history: history })
+      console.log(data)
     })
     io.on('user_join', async (data) => {
-      console.log('user joined')
-      let history = this.state.history
-      history.push(data)
-      this.setState({ history: history })
+      console.log(data)
     })
   }
 
@@ -120,7 +111,7 @@ class ChatArea extends React.Component {
         <main className={classes.content}>
           <Grid container>
             <Grid item xs={8}>
-              <Paper className="fixOverFlow history chatGround" >
+              <Paper className={classes.chatGround} >
                 {this.state.typing !== '' ? <p>{this.state.typing}</p> : <p></p>}
                 <br />
                 <br />
@@ -142,12 +133,9 @@ class ChatArea extends React.Component {
             </Grid>
             <Grid item xs={4}>
               <div className="margin-top-Bottom">
-                <Paper className="fixOverFlow history chatGround">
+                <Paper className={classes.chatGround}>
                   <div className="padding-all">
                     <h4>History</h4>
-                    {this.state.history.map((message, index) => (
-                      <p key={index}> {message} </p>
-                    ))}
                   </div>
                 </Paper>
               </div>
