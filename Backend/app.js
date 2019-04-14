@@ -11,6 +11,7 @@ require('./config/passport');
 
 var userRoutes = require('./routes/user');
 var roomRoutes = require('./routes/rooms');
+var adminRoutes = require('./routes/admin')
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -21,5 +22,6 @@ app.use(passport.initialize());
 
 app.use('/user', userRoutes);
 app.use('/room', roomRoutes);
+app.use('/admin', adminRoutes);
 
 module.exports = app;
