@@ -6,5 +6,5 @@ IJcCEQCG8XcI60UY04/HmpFgysZxAhA8vacm/CBGHzXhUuUkiQprAhAyVuGQ8jNU
 j5eTXpXdBcgBAhEAkyAvghYXi6oGMOUbNz9bXQ==`
 keys.publicKey = `MDswDQYJKoZIhvcNAQEBBQADKgAwJwIgZdPAyXsGrzo9w3OUhXHVc0VEK62B5wLi
 cZslq3wELKcCAwEAAQ==`
-
+keys.privateKey2 = "HelloWorld$#@"
 module.exports = keys;

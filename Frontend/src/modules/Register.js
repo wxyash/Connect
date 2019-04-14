@@ -125,7 +125,7 @@ class Register extends React.Component {
           className={classes.submit}
           component={Link} to="/"
         >
-          <b>Already Registered? Click to login</b>
+          <b>Already Registered? Click to login as Admin</b>
         </Button>
       </main>
     );

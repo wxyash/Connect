@@ -80,8 +80,10 @@ class MenuAppBar extends React.Component {
                   open={open}
                   onClose={this.handleClose}
                 >
-                  <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                  <MenuItem onClick={this.handleClose}>My account</MenuItem>
+                  <MenuItem onClick={this.handleClose}>User Login</MenuItem>
+                  <MenuItem onClick={this.handleClose}>User Register</MenuItem>
+                  <MenuItem onClick={this.handleClose}>Admin Login</MenuItem>
+                  <MenuItem onClick={this.handleClose}>Admin Register</MenuItem>
                 </Menu>
               </div>
             )}

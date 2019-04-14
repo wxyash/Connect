@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const keys = require ('../config/keys');
 
-const UserSchema = mongoose.Schema({
+const AdminSchema = mongoose.Schema({
   time_created: {
     type: Date,
     default: Date.now
@@ -30,20 +30,20 @@ const UserSchema = mongoose.Schema({
   
 });
 
-UserSchema.methods.setPassword = async function(password){
+AdminSchema.methods.setPassword = async function(password){
   this.salt = crypto.randomBytes(16).toString('hex');
   this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 'sha256').toString('hex')
   console.log(this.hash)
   return this.save();
 }
 
-UserSchema.methods.validPassword = function(password){
+AdminSchema.methods.validPassword = function(password){
   var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 'sha256').toString('hex');
   return this.hash === hash;
 }
 
 // Private and public keys need to be added
-UserSchema.methods.generateJwt = function(){
+AdminSchema.methods.generateJwt = function(){
   var expiry = new Date();
   expiry.setDate(expiry.getDate() + 7)
   return jwt.sign({
@@ -52,12 +52,11 @@ UserSchema.methods.generateJwt = function(){
     last_name: this.last_name,
     email: this.email,
     exp: parseInt(expiry.getTime / 1000)
-  }, keys.privateKey)
+  }, keys.privateKey2)
 }
 
 
-
-const User = mongoose.model('User', UserSchema);
+const Admin = mongoose.model('Admin', AdminSchema);
 module.exports = {
-  User
+  Admin
 };

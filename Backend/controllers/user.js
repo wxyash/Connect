@@ -68,7 +68,6 @@ let Login = function (req, res) {
   }
   // Ask Yash if this is importent -->  io.emit('user_connect', user._id)
   passport.authenticate('local', (err, user, info)=>{
-    console.log("hola")
     var token;
     // if Passport throw/catches an error
     if(err){

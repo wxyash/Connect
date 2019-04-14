@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { func } from 'prop-types';
 
 export const URL = 'http://localhost:3001'
 export const API = {
@@ -11,6 +12,14 @@ export const API = {
     },
     findByEmail: function (email) {
       return axios.post(URL + `/user/find`, email)
+    }
+  },
+  admin: {
+    adminRegister: function(data) {
+      return axios.post(URL + '/admin/register', data);
+    },
+    adminLogin: function(data){
+      return axios.post(URL + '/admin/login', data);
     }
   },
   rooms: {
