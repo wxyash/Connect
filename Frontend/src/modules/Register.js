@@ -57,6 +57,7 @@ class Register extends React.Component {
     }
   }
   formHandler(event) {
+    console.log(event.target)
     const name = event.target.name
     const value = event.target.value
     this.setState({ [name]: value })
@@ -69,7 +70,6 @@ class Register extends React.Component {
       password: this.state.password
     }
     API.user.register(data).then((s) => {
-      window.alert('Registerd Successfully, you may login')
       console.log('Register Successfully', s)
     }).catch((e) => {
       console.log(e)

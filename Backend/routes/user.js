@@ -9,7 +9,6 @@ const user = require('../controllers/user')
 // router.post('/register', car.createCar);
 // router.patch('/update', car.updateCar)
 // router.delete('/delete',car.deleteCar);
-router.post('/login', user.Login)
 router.post('/register', user.Register)
 router.post('/find', user.findByEmail)
 module.exports = router;

@@ -1,8 +1,7 @@
 const { io } = require('../bin/www')
 const { User } = require('../models/user')
 const _ = require('lodash')
-const { badRequest, success, forbidden, notFound, unauthorized } = require('../utils/responseHandler')
-const passport = require('passport')
+const { badRequest, success } = require('../utils/responseHandler')
 
 let Register = async function (req, res) {
   let errors = {};
@@ -13,49 +12,27 @@ let Register = async function (req, res) {
     };
   });
 
-  if (Object.keys(errors).length) {
-    return badRequest("Error registering user", {error: errors.message}, res)
-  }
-
-  let existUser
-  try {
-    existUser = await User.findOne({email: req.body.email })
-    if(existUser){
-      return forbidden("Sorry, the email id is already taken, please try with a new one.", {}, res)
-    }
-  } catch (error) {
-    return badRequest('Error Registering user', {error: error.message}, res)
-  }
-
   let data = _.pick(req.body, reqFields)
+
   let newUser
   try {
     newUser = await new User(data)
-    if (!newUser) { return badRequest('Error creating user', {}, res) }
+    if (!newUser) { badRequest('Error creating user', {}, res) }
   } catch (error) {
-    return badRequest('Cannot register user, error creating', { error: error.message }, res)
+    badRequest('Cannot register user, error creating', { error: error.message }, res)
   }
 
-  let jwt 
-  try {
-    jwt = await newUser.generateJwt()
-    if(!jwt){
-      return badRequest('Error Generating Jwt', {}, res)
-    }
-  } catch (error) {
-    return badRequest('Error Generating JWT', {error: error.message}, res)
-  }
   let savedUser
   try {
-    savedUser = await newUser.setPassword(req.body.password)
+    savedUser = await newUser.save()
     if (!savedUser) { return badRequest('Error saving user', {}, res) }
   } catch (error) {
     return badRequest('Cannot register user, error saving', { error: error.message }, res)
   }
-  return success('User created, you may login.', {}, res)
+  return success('User created, you may login.', { user: savedUser }, res)
 }
 
-let Login = function (req, res) {
+let Login = async function (req, res) {
   let errors = {};
   let reqFields = ['email', 'password'];
   reqFields.forEach(function (field) {
@@ -63,25 +40,23 @@ let Login = function (req, res) {
       errors[field] = `${field.replace(/_/g, ' ')} is required`;
     };
   });
-  if (Object.keys(errors).length) {
-    return badRequest("Error login user", {error: errors.message}, res)
-  }
-  // Ask Yash if this is importent -->  io.emit('user_connect', user._id)
-  passport.authenticate('local', (err, user, info)=>{
-    console.log("hola")
-    var token;
-    // if Passport throw/catches an error
-    if(err){
-      return notFound('User Not Found', {error: err.message}, res)
-    }
 
-    if(!user){
-      // If Not User
-      return unauthorized("The Account is unauthorized to access", {error: info}, res)
-    }
-    token = user.generateJwt()
-    success('Account authorized' ,{'token': token}, res)
-  })(req, res)
+  let data = _.pick(req.body, reqFields)
+
+  let user
+  try {
+    newUser = await User.find({ email: data.email })
+    if (!newUser) { return badRequest('User not found', {}, res) }
+  } catch (error) {
+    return badRequest('Cannot find the user', { error: error.message }, res)
+  }
+
+  if (user.password === data.password) {
+    io.emit('user_connect', user._id)
+    return success('Login Successful', { user: user }, res)
+  } else {
+    return badRequest('Incorrect username or password', {}, res)
+  }
 }
 
 let findByEmail = async function (req, res) {
