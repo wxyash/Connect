@@ -63,11 +63,12 @@ class Register extends React.Component {
     this.setState({ [name]: value })
   }
   register = () => {
+    const { firstName, lastName, email, password} = this.state;
     let data = {
-      first_name: this.state.firstName,
-      last_name: this.state.lastName,
-      email: this.state.email,
-      password: this.state.password
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      password: password
     }
     API.user.register(data).then((s) => {
       console.log('Register Successfully', s)

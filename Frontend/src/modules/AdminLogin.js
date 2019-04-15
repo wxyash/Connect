@@ -67,9 +67,15 @@ const styles = theme => ({
             email: this.state.email,
             password: this.state.password
         }
-        API.admin.adminLogin(data).then((res)=>{
-            console.log("Log in possible")
-        }).catch((error)=>{
+        API.admin.adminLogin(data).then(
+            (res)=>{
+                window.alert(`${res.data.msg} You may log in`)
+                console.log(res.msg)
+            },
+            (err) =>{
+                window.alert("Your login credintial is invalid, Please enter valid email or password, Login Failed")
+            }
+        ).catch((error)=>{
             console.log(error)
         })
       }

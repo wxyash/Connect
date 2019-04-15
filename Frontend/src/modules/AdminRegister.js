@@ -64,8 +64,10 @@ const styles = theme => ({
       }
       adminRegister = () => {
           const { firstName, lastName, email, password, confPassword} = this.state;
-          if(password !== confPassword){
-              console.log("No Match")
+          if(firstName === '' , lastName==='', email==='', password==='', confPassword===''){
+            window.alert('Fields cannot be empty')
+          }else if(password !== confPassword){
+            window.alert("Password And Confirm Password does not match!")
           }else{
           let data = {
               first_name: firstName,
@@ -74,10 +76,17 @@ const styles = theme => ({
               password: password
           }
           console.log(data)
-          API.admin.adminRegister(data).then((res) => {
+          API.admin.adminRegister(data).then(
+              (res) => {
               window.alert('Admin Registerd Successfully, You May login')
               console.log('Register Admin', res)
-          }).catch((error)=>{
+              console.log(res)
+              },
+              (err) => {
+                    console.log("I am here")
+              }
+          ).catch((error)=>{
+                console.log("I am here")
               console.log(error.message)
           })
         }
