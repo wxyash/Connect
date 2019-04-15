@@ -9,6 +9,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Main from './routes/main'
+import { Link } from 'react-router-dom'
 
 const styles = {
   root: {
@@ -80,8 +81,10 @@ class MenuAppBar extends React.Component {
                   open={open}
                   onClose={this.handleClose}
                 >
-                  <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                  <MenuItem onClick={this.handleClose}>My account</MenuItem>
+                  <MenuItem onClick={this.handleClose} component={Link} to='/AdminRegister'>Admin Register</MenuItem>
+                  <MenuItem onClick={this.handleClose} component={Link} to='/AdminLogin'>Admin Login</MenuItem>
+                  <MenuItem onClick={this.handleClose} component={Link} to='/Register'>User Register</MenuItem>
+                  <MenuItem onClick={this.handleClose} component={Link} to='/'>User Login</MenuItem>
                 </Menu>
               </div>
             )}

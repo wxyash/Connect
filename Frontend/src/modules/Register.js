@@ -86,7 +86,7 @@ class Register extends React.Component {
             <AccountCircle />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Register
+            User Register
         </Typography>
           <form className={classes.form}>
             <FormControl margin="normal" fullWidth>

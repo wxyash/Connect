@@ -57,8 +57,52 @@ let Register = async function (req, res) {
     return success('User created, you may login.', {admin: savedUser}, res)
   }
 
+  let Login = function(req, res) {
+    let errors ={}
+    let reqFields = ['email', 'password'];
+    reqFields.forEach(function(field){
+      if(!req.body[field] || req.body.field === ''){
+        errors[field] = `${field.replace(/_/g, ' ')} is required`;
+      };
+    })
+    if(Object.keys(errors).length){
+      return badRequest('Error Login Admin', {errors: errors}, res)
+    }
+
+    passport.authenticate('local', (err, admin, info) => {
+      var token;
+      if(err){
+        return notFound('Admin Not Found', {error: err.message}, res);
+      }
+
+      if(!admin){
+        return unauthorized("The Account is unauthorized", {error: info}, res);
+      }else{
+        token = admin.generateJwt()
+        success('Account authorized', {'token': token}, res)
+      }
+    })(req, res)
+  }
+
   
+  let findByEmail = async function (req, res) {
+    console.log(req.body)
+    let email = req.body.email
+    let user
+    try {
+      user = await User.find({ email: email })
+      console.log(user)
+      if (!user) {
+        return badRequest(`Cannot find user`, {}, res)
+      }
+    } catch (error) {
+      return badRequest(`Cannot find user, Error: ${error.message}`, {}, res)
+    }
+    success('User', user, res)
+  }
 
   module.exports = {
       Register,
+      Login,
+      findByEmail
   }

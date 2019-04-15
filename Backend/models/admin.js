@@ -29,7 +29,7 @@ const AdminSchema = mongoose.Schema({
    }
 });
 
-AdminSchema.methods.setPassword = async function(password){
+AdminSchema.methods.setPassword = function(password){
     this.salt = crypto.randomBytes(16).toString('hex');
     this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 'sha256').toString('hex')
     return this.save();
@@ -37,7 +37,7 @@ AdminSchema.methods.setPassword = async function(password){
   
 AdminSchema.methods.validPassword = function(password){
     var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 'sha256').toString('hex');
-    console.log(hash)
+    console.log(this.hash === hash)
     return this.hash === hash;
   }
   
