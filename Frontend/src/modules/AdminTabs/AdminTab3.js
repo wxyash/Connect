@@ -8,6 +8,13 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { Button } from '@material-ui/core';
+import { API } from '../../controllers/api';
+import Modal from '@material-ui/core/Modal'
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem'
 
 
 const CustomTableCell = withStyles(theme => ({
@@ -34,7 +41,36 @@ const styles = theme => ({
         backgroundColor: theme.palette.background.default,
       },
     },
+    button: {
+      margin: theme.spacing.unit,
+      float: "right"
+    },
+    input: {
+      display: 'none',
+    },
+    paper: {
+      position: 'absolute',
+      width: theme.spacing.unit * 50,
+      backgroundColor: theme.palette.background.paper,
+      boxShadow: theme.shadows[5],
+      padding: theme.spacing.unit * 4,
+      outline: 'none',
+    },
+    formControl: {
+      margin: theme.spacing.unit,
+      minWidth: 120,
+    },
   });
+
+  function getModalStyle() {
+    const top = 50
+    const left = 50
+    return {
+      top: `${top}%`,
+      left: `${left}%`,
+      transform: `translate(-${top}%, -${left}%)`,
+    };
+  }
 
   let id = 0;
   function createData(Room, CreatedDate, EditDate, status) {
@@ -52,12 +88,115 @@ const styles = theme => ({
 class AdminTab3 extends React.Component{
     constructor(){
         super()
+        this.state = {
+          createRoomModal: false,
+          roomName: '',
+          password: '',
+          user: [],
+          firstName: '',
+          lastName: '',
+          open: false,
+        }
     }
+
+    componentDidMount(){
+      this.getAllUser()
+    }
+    getAllUser(){
+      API.user.findAll().then((res)=>{
+        console.log(res.data)
+        res.data.payload.user.map((res) =>{
+          this.setState({user: res})
+        })
+      }).catch((error) =>{
+        console.log(error)
+      })
+    }
+
+    addRoom(){
+      // let date = {
+      //   name: this.state.roomName,
+      //   password: this.state.password,
+      //   user_Id: 
+      // }
+    }
+    closeModal = () => {
+      this.setState({createRoomModal: false})
+    }
+    updateRoomName = (e) => {
+      this.setState({ roomName: e.target.value })
+    }
+    updateRoomPassword = (e) => {
+      this.setState({ password: e.target.value })
+    }
+
+    handleChange = event => {
+      this.setState({ [event.target.name]: event.target.value });
+    };
+  
+    handleClose = () => {
+      this.setState({ open: false });
+    };
+  
+    handleOpen = () => {
+      this.setState({ open: true });
+    };
 
     render(){
         const { classes } = this.props;
         return(
-            <Paper className={classes.root}>
+          <div className={classes.root}>
+             <Button variant="outlined" color="primary" onClick={() => this.setState({createRoomModal: true})} className={classes.button}>
+                Add A new Room
+             </Button>
+            <main className={classes.content}>
+            <Modal 
+              aria-labelledby="simple-modal-title"
+              aria-describedby="simple-modal-description"
+              open={this.state.createRoomModal}
+              onClose={this.closeModal}
+             >
+
+            <div style={getModalStyle()} className={classes.paper}>
+                <FormControl margin="normal" fullWidth>
+                  <InputLabel htmlFor="roomname">Room Name</InputLabel>
+                  <Input onChange={this.updateRoomName.bind(this)} value={this.state.roomName} id="email" name="roomname" autoFocus required />
+                </FormControl>
+                <FormControl margin="normal" fullWidth>
+                  <InputLabel htmlFor="password">Password</InputLabel>
+                  <Input onChange={this.updateRoomPassword.bind(this)} value={this.state.password} name="password" type="password" id="password" autoComplete="current-password" required />
+                </FormControl>
+                <FormControl margin="normal" fullWidth>
+                  <InputLabel htmlFor="demo-controlled-open-select">User Name</InputLabel>
+                  <Select
+                    open={this.state.open}
+                    onClose={this.handleClose}
+                    onOpen={this.handleOpen}
+                    value={this.state.age}
+                    onChange={this.handleChange}
+                    // inputProps={{
+                    //   name: 'age',
+                    //   id: 'demo-controlled-open-select',
+                    // }}
+                  >
+                  </Select>
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  <MenuItem value={10}>Ten</MenuItem>
+                  <MenuItem value={20}>Twenty</MenuItem>
+                  <MenuItem value={30}>Thirty</MenuItem>
+                </FormControl>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={this.addRoom}
+                >
+                  Create Room
+              </Button>
+              </div>
+              </Modal>
+            <Paper>
                 <Table className={classes.table}>
                     <TableHead>
                         <TableRow>
@@ -84,6 +223,8 @@ class AdminTab3 extends React.Component{
                     </TableBody>
                 </Table>
             </Paper>
+            </main>
+            </div>
         )
     }
 }

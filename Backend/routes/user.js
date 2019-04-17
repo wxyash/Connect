@@ -12,4 +12,5 @@ const user = require('../controllers/user')
 router.post('/register', user.Register);
 router.post('/find', user.findByEmail);
 router.post('/findById', user.findById);
+router.post('/findAll', user.findAll);
 module.exports = router;
