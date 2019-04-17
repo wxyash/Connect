@@ -7,6 +7,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 import {API} from '../../controllers/api'
 
 
@@ -34,6 +35,9 @@ const styles = theme => ({
       backgroundColor: theme.palette.background.default,
     },
   },
+  button2: {
+    'float': 'right'
+  }
 });  
 
 
@@ -41,7 +45,9 @@ class AdminTab1 extends React.Component{
     constructor(){
         super()
         this.state = {
-          history: []
+          history: [],
+          nextPage: '',
+          previousPage: ''
         }
     }
     
@@ -51,14 +57,35 @@ class AdminTab1 extends React.Component{
     
     getEventhistory = async() => {
       // var histArray = []
-      await API.history.eventHistory().then((res)=>{
-        console.log(res)
+      await API.history.eventHistoryPaginated(10).then((res)=>{
         this.setState({history: res.data.payload.eventHistory})
-        
+        this.setState({nextPage: 20})
+        this.setState({previousPage: 10})
       }).catch((error)=>{
         console.log(error)
       })
     }
+
+    getNextEventhistory = async () => {
+      await API.history.eventHistoryPaginated(this.state.nextPage).then((res)=>{
+        this.setState({history: res.data.payload.eventHistory})
+        this.setState({nextPage: this.state.nextPage + 10})
+        this.setState({previousPage: this.state.nextPage - 10})
+      }).catch((error)=>{
+        console.log(error)
+      })
+    }
+
+    getPrevEventhistory = async () => {
+      await API.history.eventHistoryPaginated(this.state.previousPage).then((res)=>{
+        this.setState({history: res.data.payload.eventHistory})
+        this.setState({nextPage: this.state.previousPage + 10})
+        this.setState({previousPage: this.state.previousPage - 10})
+      }).catch((error)=>{
+        console.log(error)
+      })
+    }
+
     DATE = function(datee) {
       var date = new Date(datee);
       return date.getMonth()+1+ "/" + date.getDate() + "/" + date.getFullYear() ;
@@ -84,34 +111,43 @@ class AdminTab1 extends React.Component{
     render(){
         const { classes } = this.props;
         return(
-            <Paper className={classes.root}>
-                <Table className={classes.table}>
-                    <TableHead>
-                        <TableRow>
-                            <CustomTableCell>Type</CustomTableCell>
-                            <CustomTableCell>Date</CustomTableCell>
-                            <CustomTableCell>Time</CustomTableCell>
-                            <CustomTableCell>User</CustomTableCell>
-                            <CustomTableCell>EventId</CustomTableCell>
-                            <CustomTableCell>PPID</CustomTableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {this.state.history.map((res)=>(
-                          <TableRow key={res.eventId}>
-                            <CustomTableCell>{res.connectionType}</CustomTableCell>
-                            <CustomTableCell>{                
-                              this.DATE(res.timeCreated)  
-                             }</CustomTableCell>
-                            <CustomTableCell>{this.TIME(res.timeCreated)}</CustomTableCell>
-                            <CustomTableCell>{res.firstName+ ' ' +res.lastName}</CustomTableCell>
-                            <CustomTableCell>{res.eventId}</CustomTableCell>
-                            <CustomTableCell>{res.socketId}</CustomTableCell>
-                          </TableRow>
-                      ))}
-                    </TableBody>
-                </Table>
-            </Paper>
+          <div>
+          <Paper className={classes.root}>
+            <Table className={classes.table}>
+                <TableHead>
+                    <TableRow>
+                        <CustomTableCell>Type</CustomTableCell>
+                        <CustomTableCell>Date</CustomTableCell>
+                        <CustomTableCell>Time</CustomTableCell>
+                        <CustomTableCell>User</CustomTableCell>
+                        <CustomTableCell>EventId</CustomTableCell>
+                        <CustomTableCell>PPID</CustomTableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                  {this.state.history.map((res)=>(
+                      <TableRow key={res.eventId}>
+                        <CustomTableCell>{res.connectionType}</CustomTableCell>
+                        <CustomTableCell>{                
+                          this.DATE(res.timeCreated)  
+                          }</CustomTableCell>
+                        <CustomTableCell>{this.TIME(res.timeCreated)}</CustomTableCell>
+                        <CustomTableCell>{res.firstName+ ' ' +res.lastName}</CustomTableCell>
+                        <CustomTableCell>{res.eventId}</CustomTableCell>
+                        <CustomTableCell>{res.socketId}</CustomTableCell>
+                      </TableRow>
+                  ))}
+                </TableBody>
+            </Table>
+        </Paper>
+        <br/><br/>
+      <Button variant="outlined" className={classes.button2} onClick={this.getNextEventhistory}>
+        Next Page
+      </Button>
+      <Button onClick={this.getPrevEventhistory} variant="outlined" className={classes.button}>
+        Prev Page
+      </Button>
+          </div>
         )
     }
 }
