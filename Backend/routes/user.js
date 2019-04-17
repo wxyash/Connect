@@ -9,6 +9,7 @@ const user = require('../controllers/user')
 // router.post('/register', car.createCar);
 // router.patch('/update', car.updateCar)
 // router.delete('/delete',car.deleteCar);
-router.post('/register', user.Register)
-router.post('/find', user.findByEmail)
+router.post('/register', user.Register);
+router.post('/find', user.findByEmail);
+router.post('/findById', user.findById);
 module.exports = router;

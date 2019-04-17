@@ -1,6 +1,24 @@
 import axios from 'axios'
 
 export const URL = 'http://localhost:3001'
+
+export const headers = {
+  getHeaders: () => {
+    return {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  },
+  getAuthHeaders: () => {
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'bearer ' + localStorage.getItem('token'),
+      'Access-Control-Allow-Origin': '*'
+    }
+  }
+} 
+
 export const API = {
   user: {
     login: function (data) {
@@ -19,6 +37,9 @@ export const API = {
     },
     adminLogin: function(data){
       return axios.post(URL + '/admin/login', data);
+    },
+    varifyToken: function(){
+      return axios.get(URL + '/admin/verify', {headers: headers.getAuthHeaders()})
     }
   },
   rooms: {
@@ -27,6 +48,11 @@ export const API = {
     },
     find: function () {
       return axios.get(URL + '/room/find')
+    }
+  },
+  history: {
+    eventHistory: function(){
+      return axios.post(URL + '/history/chat-history', {headers: headers.getHeaders()})
     }
   }
 }

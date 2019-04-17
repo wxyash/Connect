@@ -5,6 +5,7 @@ import Register from '../modules/Register'
 import Home from '../modules/Home'
 import AdminRegister from '../modules/AdminRegister';
 import AdminLogin from '../modules/AdminLogin';
+import AdminHome from '../modules/AdminHome';
 
 
 const Main = () => (
@@ -14,6 +15,7 @@ const Main = () => (
     <Route exact path='/Home' component={Home} />
     <Route exact path='/AdminRegister' component={AdminRegister} />
     <Route exact path='/AdminLogin' component={AdminLogin} />
+    <Route exact path='/AdminHome' component={AdminHome} />
   </Switch>
 )
 

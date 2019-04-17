@@ -83,7 +83,7 @@ const styles = theme => ({
               console.log(res)
               },
               (err) => {
-                    console.log("I am here")
+                console.log(err)
               }
           ).catch((error)=>{
                 console.log("I am here")

@@ -5,5 +5,6 @@ const admin = require('../controllers/admin')
 
 router.post('/login', admin.Login)
 router.post('/register', admin.Register)
+router.get('/verify', admin.verifyToken);
 // router.post('/find', admin.findByEmail)
 module.exports = router;

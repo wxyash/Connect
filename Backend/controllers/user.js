@@ -75,8 +75,24 @@ let findByEmail = async function (req, res) {
   success('User', user, res)
 }
 
+let findById = async function(req, res){
+  console.log(req.body)
+  let id = req.body.id;
+  let user
+  try {
+    user = await User.find({id: id})
+    if(!user){
+      return badRequest("User not found", {}, res)
+    }
+  } catch (error) {
+    return badRequest("Cannot Find User", {error: error.message}, res)
+  }
+  success('User', {data: user}, res)
+}
+
 module.exports = {
   Login,
   Register,
-  findByEmail
+  findByEmail,
+  findById
 }

@@ -50,7 +50,7 @@ AdminSchema.methods.generateJwt = function(){
       first_name: this.first_name,
       last_name: this.last_name,
       email: this.email,
-      exp: parseInt(expiry.getTime / 1000)
+      exp: parseInt(expiry.getTime() / 1000)
     }, keys.privateKey)
   }
 

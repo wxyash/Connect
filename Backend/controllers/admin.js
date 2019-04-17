@@ -3,6 +3,8 @@ const { Admin } = require('../models/admin')
 const _ = require('lodash')
 const { badRequest, success, forbidden, notFound, unauthorized } = require('../utils/responseHandler')
 const passport = require('passport')
+const jwt = require('jsonwebtoken')
+const keys = require ('../config/keys');
 
 let Register = async function (req, res) {
     let errors = {};
@@ -84,6 +86,34 @@ let Register = async function (req, res) {
     })(req, res)
   }
 
+  let verifyToken = async function(req, res) {
+    var token = req.headers['authorization'].split(' ')[1];
+    if(!token){
+      unauthorized('Access Denied', {auth: false}, res);
+    }
+
+    let decoded
+    try {
+      console.log('bhsodkika')
+      decoded = await jwt.verify(token, keys.privateKey)
+      console.log(decoded)
+       if (!decoded) return badRequest('token verification failed', {}, res)
+    } catch (error) {
+      console.log(error.message)
+      return badRequest('token verification failed', {error: error.message}, res)
+    }
+
+    let admin
+    try {
+      admin = await Admin.findById(decoded._id)
+      if (!admin) return badRequest('admin not found', {}, res)
+    } catch (error) {
+      if (!decoded) return badRequest('admin not found', {error: error.message}, res)      
+    }
+
+    return success('admin verification succesfull', admin, res)
+
+  }
   
   let findByEmail = async function (req, res) {
     console.log(req.body)
@@ -104,5 +134,6 @@ let Register = async function (req, res) {
   module.exports = {
       Register,
       Login,
-      findByEmail
+      findByEmail,
+      verifyToken
   }

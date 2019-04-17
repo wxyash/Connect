@@ -10,6 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Main from './routes/main'
 import { Link } from 'react-router-dom'
+import { Button } from '@material-ui/core';
 
 const styles = {
   root: {
@@ -28,6 +29,7 @@ class MenuAppBar extends React.Component {
   state = {
     auth: true,
     anchorEl: null,
+    userLoggedIn: this.CheckLogin()
   };
 
   handleChange = event => {
@@ -41,6 +43,27 @@ class MenuAppBar extends React.Component {
   handleClose = () => {
     this.setState({ anchorEl: null });
   };
+  
+  logOut = () =>{
+   // this.setState({anchorEl: null})
+    console.log("I am here")
+  }
+
+CheckLogin(params) {
+    let token = localStorage.getItem('token')
+    if (!token) {
+      return <div>
+        <MenuItem onClick={this.handleClose} component={Link} to='/AdminRegister'>Admin Register</MenuItem>
+        <MenuItem onClick={this.handleClose} component={Link} to='/AdminLogin'>Admin Login</MenuItem>
+        <MenuItem onClick={this.handleClose} component={Link} to='/Register'>User Register</MenuItem>
+        <MenuItem onClick={this.handleClose} component={Link} to='/'>User Login</MenuItem>
+      </div>
+    } else {
+      return <div>
+          <MenuItem onClick={this.handleClose}> Logout </MenuItem>
+        </div>
+    }
+  }
 
   render() {
     const { classes } = this.props;
@@ -81,10 +104,7 @@ class MenuAppBar extends React.Component {
                   open={open}
                   onClose={this.handleClose}
                 >
-                  <MenuItem onClick={this.handleClose} component={Link} to='/AdminRegister'>Admin Register</MenuItem>
-                  <MenuItem onClick={this.handleClose} component={Link} to='/AdminLogin'>Admin Login</MenuItem>
-                  <MenuItem onClick={this.handleClose} component={Link} to='/Register'>User Register</MenuItem>
-                  <MenuItem onClick={this.handleClose} component={Link} to='/'>User Login</MenuItem>
+                {this.state.userLoggedIn}
                 </Menu>
               </div>
             )}
