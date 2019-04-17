@@ -29,6 +29,9 @@ export const API = {
     },
     findByEmail: function (email) {
       return axios.post(URL + `/user/find`, email)
+    },
+    findAll: function(){
+      return axios.post(URL + '/user/findAll')
     }
   },
   admin: {

@@ -90,9 +90,20 @@ let findById = async function(req, res){
   success('User', {data: user}, res)
 }
 
+let findAll = async function(req, res){
+  let user 
+  try {
+    user = await User.find({})
+  } catch (error) {
+    return badRequest('Error Finding User', {error: error.message}, res)
+  }
+  return success('User', {user: user}, res)
+}
+
 module.exports = {
   Login,
   Register,
   findByEmail,
-  findById
+  findById,
+  findAll
 }
