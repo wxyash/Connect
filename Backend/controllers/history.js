@@ -64,4 +64,5 @@ let chatHistory = async function (req, res) {
 
 module.exports = {
     eventfindAll,
+    chatHistory
 }
