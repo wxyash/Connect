@@ -92,7 +92,8 @@ class AdminTab3 extends React.Component{
           createRoomModal: false,
           roomName: '',
           password: '',
-          user: [],
+          admin: [],
+          rooms: [],
           firstName: '',
           lastName: '',
           open: false,
@@ -101,24 +102,37 @@ class AdminTab3 extends React.Component{
 
     componentDidMount(){
       this.getAllUser()
+      this.getAllRooms()
     }
-    getAllUser(){
-      API.user.findAll().then((res)=>{
-        console.log(res.data)
-        res.data.payload.user.map((res) =>{
-          this.setState({user: res})
-        })
+    getAllUser = async () =>{
+      await API.admin.findAll().then((res)=>{
+        console.log(res.data.payload.admin)
+        this.setState({admin: res.data.payload.admin})
       }).catch((error) =>{
         console.log(error)
       })
     }
 
-    addRoom(){
-      // let date = {
-      //   name: this.state.roomName,
-      //   password: this.state.password,
-      //   user_Id: 
-      // }
+    getAllRooms = async () => {
+      await API.rooms.find().then(async (res) => {
+        console.log(res.data.payload)
+        this.setState({admin: res.data.payload})
+      }).catch((error) => {
+        console.log(error)
+      })
+    }
+    addRoom = async () => {
+      const {roomName, password, admin } = this.state
+      let data = {
+        name: roomName,
+        password: password,
+        user_id: admin[0]._id
+      }
+      await API.rooms.create(data).then(async (res) => {
+        console.log(res)
+      }).catch((error) => {
+        console.log(error)
+      })
     }
     closeModal = () => {
       this.setState({createRoomModal: false})
@@ -165,27 +179,6 @@ class AdminTab3 extends React.Component{
                 <FormControl margin="normal" fullWidth>
                   <InputLabel htmlFor="password">Password</InputLabel>
                   <Input onChange={this.updateRoomPassword.bind(this)} value={this.state.password} name="password" type="password" id="password" autoComplete="current-password" required />
-                </FormControl>
-                <FormControl margin="normal" fullWidth>
-                  <InputLabel htmlFor="demo-controlled-open-select">User Name</InputLabel>
-                  <Select
-                    open={this.state.open}
-                    onClose={this.handleClose}
-                    onOpen={this.handleOpen}
-                    value={this.state.age}
-                    onChange={this.handleChange}
-                    // inputProps={{
-                    //   name: 'age',
-                    //   id: 'demo-controlled-open-select',
-                    // }}
-                  >
-                  </Select>
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
                 </FormControl>
                 <Button
                   variant="contained"

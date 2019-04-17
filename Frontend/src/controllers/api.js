@@ -43,6 +43,9 @@ export const API = {
     },
     varifyToken: function(){
       return axios.get(URL + '/admin/verify', {headers: headers.getAuthHeaders()})
+    },
+    findAll: function(){
+      return axios.get(URL + '/admin/findAll')
     }
   },
   rooms: {
