@@ -19,6 +19,14 @@ const ChatRoomSchema = mongoose.Schema({
   password: {
     type: String
   },
+  edit_date: {
+    default: Date.now,
+    type: Date
+  },
+  status: {
+    default: true,
+    type: Boolean,
+  },
   user_list: [{
     type: mongoose.Schema.ObjectId
   }]

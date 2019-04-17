@@ -5,7 +5,7 @@ const { badRequest, success } = require('../utils/responseHandler')
 
 module.exports.createChatRoom = async function (req, res) {
   let errors = {};
-  let reqFields = ['user_id', 'room_name'];
+  let reqFields = ['user_id'];
   reqFields.forEach(function (field) {
     if (!req.body[field] || req.body[field] === '') {
       errors[field] = `${field.replace(/_/g, ' ')} is required`;

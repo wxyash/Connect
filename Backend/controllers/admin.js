@@ -131,9 +131,20 @@ let Register = async function (req, res) {
     success('User', user, res)
   }
 
+  let findAll = async function(req, res){
+    let admin 
+    try {
+      admin = await Admin.find({})
+    } catch (error) {
+      return badRequest('Error Finding User', {error: error.message}, res)
+    }
+    return success('Admin Found', {admin: admin}, res)
+  }
+
   module.exports = {
       Register,
       Login,
       findByEmail,
-      verifyToken
+      verifyToken,
+      findAll
   }

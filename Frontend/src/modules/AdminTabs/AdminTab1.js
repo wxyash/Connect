@@ -49,9 +49,9 @@ class AdminTab1 extends React.Component{
       this.getEventhistory()
     }
     
-    getEventhistory(){
+    getEventhistory = async() => {
       // var histArray = []
-      API.history.eventHistory().then((res)=>{
+      await API.history.eventHistory().then((res)=>{
         console.log(res)
         this.setState({history: res.data.payload.eventHistory})
         
