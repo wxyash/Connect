@@ -7,6 +7,7 @@ var app = express();
 app.use(cors());
 
 require('./models/admin')
+require('./models/message')
 require('./config/passport');
 
 var userRoutes = require('./routes/user');

@@ -1,4 +1,5 @@
 const {ConnectionHistory}= require('../models/history')
+const { Message } = require('../models/message')
 const { User } = require('../models/user');
 const _ = require('lodash')
 const { badRequest, success } = require('../utils/responseHandler')
@@ -46,6 +47,19 @@ let eventfindAll = async function(req, res){
     }
 
     success('User Chat History Found', {eventHistory: eventArray}, res)    
+}
+
+let chatHistory = async function (req, res) {
+    let history;
+    try {
+        history = await Message.find({})
+        if(!history){
+            badRequest('history not found', {}, res)
+        }
+    } catch (error) {
+        badRequest('Error finding history', {error: error.message}, res)
+    }
+    success('User Chat History Found', {chatHistory: history}, res)    
 }
 
 module.exports = {

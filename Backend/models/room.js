@@ -20,7 +20,7 @@ const ChatRoomSchema = mongoose.Schema({
     type: String
   },
   user_list: [{
-    type: mongoose.Schema.ObjectId
+    type: String
   }]
 });
 
