@@ -7,6 +7,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import {API} from '../../controllers/api'
 
 const CustomTableCell = withStyles(theme => ({
     head: {
@@ -52,8 +53,34 @@ const rows = [
 class AdminTab2 extends React.Component{
     constructor(){
         super()
+        this.state = {
+          serverData: []
+        }
+    }
+    componentDidMount () {
+      API.history.chatHistory().then((s) => {
+        this.setState({serverData: s.data.payload.chatHistory})
+      }).catch((e) => {
+        console.log(e)
+      })
     }
 
+    DATE = function(datee) {
+      var date = new Date(datee);
+      return date.getMonth()+1+ "/" + date.getDate() + "/" + date.getFullYear() ;
+    }
+     
+    TIME = function (datee) {
+      var date = new Date(datee);
+      var hours = date.getHours();
+      var minutes = date.getMinutes();
+      var ampm = hours >= 12 ? 'pm' : 'am';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      minutes = minutes < 10 ? '0'+minutes : minutes;
+      var strTime = hours + ':' + minutes + ' ' + ampm;
+      return strTime;
+    }
     render(){
         const { classes } = this.props;
         return(
@@ -71,15 +98,15 @@ class AdminTab2 extends React.Component{
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map(row => (
+                        {this.state.serverData.map(row => (
                             <TableRow className={classes.row} key={row.id}>
                                 <CustomTableCell component="th" scope="row">{row.id}</CustomTableCell>
-                                <CustomTableCell >{row.Date}</CustomTableCell>
-                                <CustomTableCell align="right">{row.Time}</CustomTableCell>
-                                <CustomTableCell align="right">{row.Sender}</CustomTableCell>
-                                <CustomTableCell align="right">{row.receiver}</CustomTableCell>
-                                <CustomTableCell align="right">{row.Message}</CustomTableCell>
-                                <CustomTableCell align="right">{row.Room}</CustomTableCell>
+                                <CustomTableCell >{this.DATE(row.time_created)}</CustomTableCell>
+                                <CustomTableCell align="left">{this.TIME(row.time_created)}</CustomTableCell>
+                                <CustomTableCell align="left">{row.sender}</CustomTableCell>
+                                <CustomTableCell align="left">{row.recieiver}</CustomTableCell>
+                                <CustomTableCell align="left">{row.message}</CustomTableCell>
+                                <CustomTableCell align="left">{row.room}</CustomTableCell>
                             </TableRow>
                         ))}
                     </TableBody>

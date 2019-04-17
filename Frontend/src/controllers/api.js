@@ -59,6 +59,9 @@ export const API = {
   history: {
     eventHistory: function(){
       return axios.post(URL + '/history/chat-history', {headers: headers.getHeaders()})
+    },
+    chatHistory: function () {
+      return axios.get(URL + '/history/chat-history')
     }
   }
 }

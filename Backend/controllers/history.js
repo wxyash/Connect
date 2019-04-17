@@ -62,7 +62,55 @@ let chatHistory = async function (req, res) {
     success('User Chat History Found', {chatHistory: history}, res)    
 }
 
+let paginatedEventHistory = async function (req, res) {
+    if (!req.params.ipp) return badRequest('enter number of items per page', {}, res)
+    let itemsPerPage = req.params.ipp
+    let history;
+    try {
+        history = await ConnectionHistory.find({}).skip(parseInt(itemsPerPage - 10)).limit(10)
+        if(!history){
+            badRequest('history not found', {}, res)
+        }
+    } catch (error) {
+        badRequest('Error finding history', {error: error.message}, res)
+    }
+    let historyArray = history.map((elems) =>{
+        let data = {}
+        data.id = elems._id
+        data.userId = elems.user_id
+        data.connectionType = elems.connection_type
+        data.timeCreated = elems.time_created
+        data.socketId = elems.socket_id
+        return data
+    })
+
+    let eventArray = []
+    for(const hist of historyArray){
+        let user;
+        try {
+            user = await User.find({_id: {$in: hist.userId }})
+        } catch (error) {
+            badRequest('user not found', {error: error}, res)
+        }
+        for(const userinfo of user){
+            let data = {
+                connectionType: hist.connectionType,
+                socketId: hist.socketId,
+                timeCreated: hist.timeCreated,
+                eventId: hist.id,
+                firstName: userinfo.first_name,
+                lastName: userinfo.last_name,
+                email: userinfo.email
+            }
+            eventArray.push(data)
+        }
+    }
+
+    success('User Chat History Found', {eventHistory: eventArray}, res)    
+}
+
 module.exports = {
     eventfindAll,
-    chatHistory
+    chatHistory,
+    paginatedEventHistory
 }
