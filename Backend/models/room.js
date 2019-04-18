@@ -19,10 +19,6 @@ const ChatRoomSchema = mongoose.Schema({
   password: {
     type: String
   },
-  edit_date: {
-    default: Date.now,
-    type: Date
-  },
   status: {
     default: true,
     type: Boolean,
@@ -30,6 +26,9 @@ const ChatRoomSchema = mongoose.Schema({
   user_list: [{
     type: String
   }]
+},
+{
+  timestamps: { createdAt: 'time_created', updatedAt: 'time_updated' }
 });
 
 const ChatRoom = mongoose.model('ChatRoom', ChatRoomSchema);

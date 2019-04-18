@@ -39,3 +39,36 @@ module.exports.findAll = async function (req, res) {
   let rooms = await ChatRoom.find({})
   success('Rooms', rooms, res)
 }
+
+module.exports.editRoom = async function (req, res) {
+  let errors = {};
+  let reqFields = ['room_id'];
+  reqFields.forEach(function (field) {
+    if (!req.body[field] || req.body[field] === '') {
+      errors[field] = `${field.replace(/_/g, ' ')} is required`;
+    };
+  });
+  let data = _.pick(req.body, ['room_name', 'status'])
+  let roomID = req.body.room_id
+  let room
+  try {
+    room = await ChatRoom.findById(roomID)
+    if (!room) { return badRequest('Error updated room a room', {} ,res) }
+  } catch (error) {
+    return badRequest('Error updated room a room', error.message ,res)
+  }
+
+  room.status = data.status
+  room.name = data.room_name
+
+  let savedRoom 
+  let savedRoom
+  try {
+    savedRoom = await room.save()
+    if (!savedRoom) { return badRequest('Error saving updated room a room', {} ,res) }
+  } catch (error) {
+    return badRequest('Error saving updated room a room', error.message, res)
+  }
+
+  return success('Room has been updated Successfully', savedRoom, res)
+}
