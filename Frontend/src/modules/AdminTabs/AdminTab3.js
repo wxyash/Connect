@@ -183,7 +183,19 @@ class AdminTab3 extends React.Component{
       return statuss
     }
     edit = async () => {
-      
+      const{roomId, roomName, checked} = this.state
+      let data = {
+        room_id: roomId,
+        room_name: roomName,
+        status: checked 
+      }
+      API.rooms.edit(data).then((res)=>{
+        console.log(res)
+        this.getAllRooms()
+        this.closeModal2()
+      }).catch((e)=>{
+        console.log(e)
+      })
     }
     render(){
         const { classes } = this.props;
@@ -222,7 +234,7 @@ class AdminTab3 extends React.Component{
                aria-labelledby="simple-modal-title"
                aria-describedby="simple-modal-description"
                open={this.state.createRoomModal2}
-               onClose={this.closeModal}
+               onClose={this.closeModal2}
                >
                 <div style={getModalStyle()} className={classes.paper}>
                 <FormControl margin="normal" fullWidth>
@@ -253,17 +265,18 @@ class AdminTab3 extends React.Component{
                             <CustomTableCell>Created Date</CustomTableCell>
                             <CustomTableCell>Edited Date</CustomTableCell>
                             <CustomTableCell>Status</CustomTableCell>
+                            <CustomTableCell>Action</CustomTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                      {this.state.rooms.map((res)=>(
+                      {this.state.rooms.map((res , index)=>(
                         <TableRow key={res._id}>
-                              <CustomTableCell>{res._id}</CustomTableCell>
+                              <CustomTableCell>{index+1}</CustomTableCell>
                               <CustomTableCell>{res.name}</CustomTableCell>
                               <CustomTableCell>{this.DATE(res.time_created) + " " + this.TIME(res.time_created)}</CustomTableCell>
-                              <CustomTableCell>"EDIT COMING"</CustomTableCell>
+                              <CustomTableCell>{this.DATE(res.time_updated) + " " + this.TIME(res.time_updated)}</CustomTableCell>
                               <CustomTableCell>{this.status(res.status)}</CustomTableCell>
-                              <Button varient="outlined" color="secondary" className={this.button} onClick={()=>this.setState({roomId: res._id, createRoomModal2: true, roomName: res.name, checked: res.status })}>Edit</Button>
+                              <CustomTableCell> <Button varient="outlined" color="secondary" className={this.button} onClick={()=>this.setState({roomId: res._id, createRoomModal2: true, roomName: res.name, checked: res.status })}>Edit</Button></CustomTableCell>
                         </TableRow>
                       ))}
                           

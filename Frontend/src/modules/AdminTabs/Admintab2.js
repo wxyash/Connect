@@ -36,20 +36,6 @@ const styles = theme => ({
   });
 
 
-  let id = 0;
-function createData(Date, Time, Sender, receiver, Message, Room) {
-  id += 1;
-  return { id, Date, Time, Sender, receiver, Message, Room};
-}
-
-const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0, 1),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3, 1),
-    createData('Eclair', 262, 16.0, 24, 6.0, 1),
-    createData('Cupcake', 305, 3.7, 67, 4.3, 1),
-    createData('Gingerbread', 356, 16.0, 49, 3.9, 1),
-  ];
-
 class AdminTab2 extends React.Component{
     constructor(){
         super()
@@ -98,9 +84,9 @@ class AdminTab2 extends React.Component{
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {this.state.serverData.map(row => (
+                        {this.state.serverData.map((row, index) => (
                             <TableRow className={classes.row} key={row.id}>
-                                <CustomTableCell component="th" scope="row">{row.id}</CustomTableCell>
+                                <CustomTableCell component="th" scope="row">{index+1}</CustomTableCell>
                                 <CustomTableCell >{this.DATE(row.time_created)}</CustomTableCell>
                                 <CustomTableCell align="left">{this.TIME(row.time_created)}</CustomTableCell>
                                 <CustomTableCell align="left">{row.sender}</CustomTableCell>

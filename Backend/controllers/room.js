@@ -61,7 +61,6 @@ module.exports.editRoom = async function (req, res) {
   room.status = data.status
   room.name = data.room_name
 
-  let savedRoom 
   let savedRoom
   try {
     savedRoom = await room.save()

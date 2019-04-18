@@ -54,6 +54,9 @@ export const API = {
     },
     find: function () {
       return axios.get(URL + '/room/find')
+    },
+    edit: function(data){
+      return axios.post(URL + '/room/editRoom', data)
     }
   },
   history: {
