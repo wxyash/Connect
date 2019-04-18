@@ -62,6 +62,9 @@ export const API = {
     },
     chatHistory: function () {
       return axios.get(URL + '/history/chat-history')
+    },
+    eventHistoryPaginated (itemPerPage) {
+      return axios.get(URL + `/history/chat-history-paginated/${itemPerPage}`)
     }
   }
 }
