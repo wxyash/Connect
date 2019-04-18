@@ -15,6 +15,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem'
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 
 
 const CustomTableCell = withStyles(theme => ({
@@ -72,30 +74,21 @@ const styles = theme => ({
     };
   }
 
-  let id = 0;
-  function createData(Room, CreatedDate, EditDate, status) {
-    id += 1;
-    return {id, Room, CreatedDate, EditDate, status};
-  }
-  const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24),
-    createData('Ice cream sandwich', 237, 9.0, 37),
-    createData('Eclair', 262, 16.0, 24),
-    createData('Cupcake', 305, 3.7, 67),
-    createData('Gingerbread', 356, 16.0),
-  ];
 
 class AdminTab3 extends React.Component{
     constructor(){
         super()
         this.state = {
           createRoomModal: false,
+          createRoomModal2: false,
           roomName: '',
           password: '',
           admin: [],
           rooms: [],
           firstName: '',
           lastName: '',
+          checked: true,
+          roomId: '',
           open: false,
         }
     }
@@ -116,7 +109,7 @@ class AdminTab3 extends React.Component{
     getAllRooms = async () => {
       await API.rooms.find().then(async (res) => {
         console.log(res.data.payload)
-        this.setState({admin: res.data.payload})
+        this.setState({rooms: res.data.payload})
       }).catch((error) => {
         console.log(error)
       })
@@ -137,6 +130,9 @@ class AdminTab3 extends React.Component{
     closeModal = () => {
       this.setState({createRoomModal: false})
     }
+    closeModal2 = () => {
+      this.setState({createRoomModal2: false})
+    }
     updateRoomName = (e) => {
       this.setState({ roomName: e.target.value })
     }
@@ -147,6 +143,11 @@ class AdminTab3 extends React.Component{
     handleChange = event => {
       this.setState({ [event.target.name]: event.target.value });
     };
+    
+    handleChange2 = name => event => {
+      this.setState({ [name]: event.target.checked });
+    };
+  
   
     handleClose = () => {
       this.setState({ open: false });
@@ -156,6 +157,34 @@ class AdminTab3 extends React.Component{
       this.setState({ open: true });
     };
 
+    DATE = function(datee) {
+      var date = new Date(datee);
+      return date.getMonth()+1+ "/" + date.getDate() + "/" + date.getFullYear() ;
+    }
+     
+    TIME = function (datee) {
+      var date = new Date(datee);
+      var hours = date.getHours();
+      var minutes = date.getMinutes();
+      var ampm = hours >= 12 ? 'pm' : 'am';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      minutes = minutes < 10 ? '0'+minutes : minutes;
+      var strTime = hours + ':' + minutes + ' ' + ampm;
+      return strTime;
+    }
+    status = function(stat){
+      var statuss = ""
+      if(stat === true){
+        statuss = "Active"
+      }else{
+        statuss = "Inactive"
+      }
+      return statuss
+    }
+    edit = async () => {
+      
+    }
     render(){
         const { classes } = this.props;
         return(
@@ -189,6 +218,32 @@ class AdminTab3 extends React.Component{
               </Button>
               </div>
               </Modal>
+              <Modal
+               aria-labelledby="simple-modal-title"
+               aria-describedby="simple-modal-description"
+               open={this.state.createRoomModal2}
+               onClose={this.closeModal}
+               >
+                <div style={getModalStyle()} className={classes.paper}>
+                <FormControl margin="normal" fullWidth>
+                    <InputLabel htmlFor="roomname">Room Name</InputLabel>
+                    <Input onChange={this.updateRoomName.bind(this)} value={this.state.roomName} id="email" name="roomname" autoFocus required />
+                </FormControl>
+                <InputLabel htmlFor="status">Status: </InputLabel>
+                <Switch 
+                    checked={this.state.checked}
+                    onChange={this.handleChange2('checked')}
+                    value = "checked"
+                   />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={this.edit}
+                >
+                  Edit Room
+              </Button>
+                </div>
+               </Modal>
             <Paper>
                 <Table className={classes.table}>
                     <TableHead>
@@ -201,18 +256,17 @@ class AdminTab3 extends React.Component{
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map(row=>(
-                            <TableRow>
-                                <CustomTableCell component="th" scope="row">
-                                    {row.id}
-                                </CustomTableCell>
-                                <CustomTableCell align="right">{row.Room}</CustomTableCell>
-                                <CustomTableCell align="right">{row.CreatedDate}</CustomTableCell>
-                                <CustomTableCell align="right">{row.EditDate}</CustomTableCell>
-                                <CustomTableCell align="right">{row.status}</CustomTableCell>
-                                {/* <Button align="right">Edit</Button> */}
-                            </TableRow>
-                        ))}
+                      {this.state.rooms.map((res)=>(
+                        <TableRow key={res._id}>
+                              <CustomTableCell>{res._id}</CustomTableCell>
+                              <CustomTableCell>{res.name}</CustomTableCell>
+                              <CustomTableCell>{this.DATE(res.time_created) + " " + this.TIME(res.time_created)}</CustomTableCell>
+                              <CustomTableCell>"EDIT COMING"</CustomTableCell>
+                              <CustomTableCell>{this.status(res.status)}</CustomTableCell>
+                              <Button varient="outlined" color="secondary" className={this.button} onClick={()=>this.setState({roomId: res._id, createRoomModal2: true, roomName: res.name, checked: res.status })}>Edit</Button>
+                        </TableRow>
+                      ))}
+                          
                     </TableBody>
                 </Table>
             </Paper>
