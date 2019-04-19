@@ -72,7 +72,8 @@ const styles = theme => ({
             (res)=>{
                 console.log(res.data.payload.token)
                 localStorage.setItem('token', res.data.payload.token)
-                this.props.history.push("/AdminHome")
+                // this.props.history.push("/AdminHome")
+                window.location.href = "/AdminHome"
                 window.alert(`${res.data.msg} You may log in`)
             },
             (err) =>{

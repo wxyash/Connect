@@ -37,7 +37,7 @@ class AdminHome extends React.Component{
           };
         
     }
-    componentDidMount(){
+    componentWillMount(){
         // var token = localStorage.getItem('token')
         API.admin.varifyToken().then(
             (res)=>{
